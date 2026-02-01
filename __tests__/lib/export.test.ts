@@ -172,4 +172,120 @@ describe("lib/export", () => {
       expect(writtenContent).toContain("Summary");
     });
   });
+
+  describe("exportToPdf - markdown parsing", () => {
+    const categories = [
+      { id: "notes" as const, label: "Notatki" },
+    ];
+
+    it("converts bold markdown to HTML strong tags", () => {
+      const notes = [createNote({ content: "This is **bold** text" })];
+      const mockWindow = {
+        document: {
+          write: jest.fn(),
+          close: jest.fn(),
+          title: "",
+        },
+        print: jest.fn(),
+      };
+      mockOpen.mockReturnValue(mockWindow);
+      
+      exportToPdf(notes, categories, "");
+      
+      const writtenContent = mockWindow.document.write.mock.calls[0][0];
+      expect(writtenContent).toContain("<strong>bold</strong>");
+      expect(writtenContent).not.toContain("**bold**");
+    });
+
+    it("converts italic markdown to HTML em tags", () => {
+      const notes = [createNote({ content: "This is *italic* text" })];
+      const mockWindow = {
+        document: {
+          write: jest.fn(),
+          close: jest.fn(),
+          title: "",
+        },
+        print: jest.fn(),
+      };
+      mockOpen.mockReturnValue(mockWindow);
+      
+      exportToPdf(notes, categories, "");
+      
+      const writtenContent = mockWindow.document.write.mock.calls[0][0];
+      expect(writtenContent).toContain("<em>italic</em>");
+    });
+
+    it("converts list items to HTML li tags", () => {
+      const notes = [createNote({ content: "- Item 1\n- Item 2" })];
+      const mockWindow = {
+        document: {
+          write: jest.fn(),
+          close: jest.fn(),
+          title: "",
+        },
+        print: jest.fn(),
+      };
+      mockOpen.mockReturnValue(mockWindow);
+      
+      exportToPdf(notes, categories, "");
+      
+      const writtenContent = mockWindow.document.write.mock.calls[0][0];
+      expect(writtenContent).toContain("<li>Item 1</li>");
+      expect(writtenContent).toContain("<li>Item 2</li>");
+    });
+
+    it("includes note title in PDF export", () => {
+      const notes = [createNote({ title: "My Important Note", content: "Content here" })];
+      const mockWindow = {
+        document: {
+          write: jest.fn(),
+          close: jest.fn(),
+          title: "",
+        },
+        print: jest.fn(),
+      };
+      mockOpen.mockReturnValue(mockWindow);
+      
+      exportToPdf(notes, categories, "");
+      
+      const writtenContent = mockWindow.document.write.mock.calls[0][0];
+      expect(writtenContent).toContain("My Important Note");
+    });
+
+    it("includes category header in PDF export", () => {
+      const notes = [createNote({ category: "notes" })];
+      const mockWindow = {
+        document: {
+          write: jest.fn(),
+          close: jest.fn(),
+          title: "",
+        },
+        print: jest.fn(),
+      };
+      mockOpen.mockReturnValue(mockWindow);
+      
+      exportToPdf(notes, categories, "");
+      
+      const writtenContent = mockWindow.document.write.mock.calls[0][0];
+      expect(writtenContent).toContain("<h2>Notatki</h2>");
+    });
+
+    it("includes filter info when search query provided", () => {
+      const notes = [createNote()];
+      const mockWindow = {
+        document: {
+          write: jest.fn(),
+          close: jest.fn(),
+          title: "",
+        },
+        print: jest.fn(),
+      };
+      mockOpen.mockReturnValue(mockWindow);
+      
+      exportToPdf(notes, categories, "test search");
+      
+      const writtenContent = mockWindow.document.write.mock.calls[0][0];
+      expect(writtenContent).toContain("test search");
+    });
+  });
 });

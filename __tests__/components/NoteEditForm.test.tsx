@@ -1,7 +1,24 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { NoteEditForm } from "@/components/NoteEditForm";
 
 const mockT = (key: string) => key;
+
+// Mock FileReader
+class MockFileReader {
+  result: string | null = null;
+  onload: ((event: ProgressEvent<FileReader>) => void) | null = null;
+  
+  readAsDataURL() {
+    setTimeout(() => {
+      this.result = "data:image/png;base64,mockImageData";
+      if (this.onload) {
+        this.onload({ target: { result: this.result } } as ProgressEvent<FileReader>);
+      }
+    }, 0);
+  }
+}
+
+global.FileReader = MockFileReader as unknown as typeof FileReader;
 
 const defaultProps = {
   initialTitle: "Test Title",
@@ -135,6 +152,104 @@ describe("NoteEditForm - Tags", () => {
       "Test Title",
       "Test Content",
       ["tag1", "tag2"],
+      "default",
+      null,
+      []
+    );
+  });
+});
+
+describe("NoteEditForm - Images", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should show add image button", () => {
+    render(<NoteEditForm {...defaultProps} />);
+    
+    expect(screen.getByText("addImage")).toBeInTheDocument();
+  });
+
+  it("should have hidden file input", () => {
+    render(<NoteEditForm {...defaultProps} />);
+    
+    const fileInput = document.querySelector('input[type="file"]');
+    expect(fileInput).toBeInTheDocument();
+    expect(fileInput).toHaveClass("hidden");
+  });
+
+  it("should accept image files only", () => {
+    render(<NoteEditForm {...defaultProps} />);
+    
+    const fileInput = document.querySelector('input[type="file"]');
+    expect(fileInput).toHaveAttribute("accept", "image/*");
+  });
+
+  it("should allow multiple file selection", () => {
+    render(<NoteEditForm {...defaultProps} />);
+    
+    const fileInput = document.querySelector('input[type="file"]');
+    expect(fileInput).toHaveAttribute("multiple");
+  });
+
+  it("should save with images when provided", () => {
+    const onSave = jest.fn();
+    const { container } = render(
+      <NoteEditForm 
+        {...defaultProps} 
+        onSave={onSave}
+        initialTags={[]}
+        initialImages={["data:image/png;base64,testImage"]} 
+      />
+    );
+    
+    // Check image is rendered
+    const img = container.querySelector('img');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute("src", "data:image/png;base64,testImage");
+    
+    // Save
+    const saveButton = screen.getByText("save");
+    fireEvent.click(saveButton);
+    
+    expect(onSave).toHaveBeenCalledWith(
+      "Test Title",
+      "Test Content",
+      [],
+      "default",
+      null,
+      ["data:image/png;base64,testImage"]
+    );
+  });
+
+  it("should remove image when clicking remove button", () => {
+    const onSave = jest.fn();
+    const { container } = render(
+      <NoteEditForm 
+        {...defaultProps} 
+        onSave={onSave}
+        initialTags={[]}
+        initialImages={["data:image/png;base64,testImage"]} 
+      />
+    );
+    
+    // Image should exist initially
+    expect(container.querySelector('img')).toBeInTheDocument();
+    
+    // Find and click remove button (bg-red-600)
+    const removeButton = container.querySelector('button.bg-red-600');
+    expect(removeButton).toBeInTheDocument();
+    fireEvent.click(removeButton!);
+    
+    // Image should be removed
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+    
+    // Save and verify empty images
+    fireEvent.click(screen.getByText("save"));
+    expect(onSave).toHaveBeenCalledWith(
+      "Test Title",
+      "Test Content",
+      [],
       "default",
       null,
       []
