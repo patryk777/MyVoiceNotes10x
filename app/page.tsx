@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
@@ -21,6 +21,9 @@ export default function Home() {
   const [processingStatus, setProcessingStatus] = useState("");
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<Record<NoteCategory, "date" | "alpha">>(
+    { tasks: "date", ideas: "date", notes: "date", meetings: "date" }
+  );
 
   const processAudio = useCallback(async (blob: Blob) => {
     if (!blob || isProcessing) return;
@@ -80,7 +83,7 @@ export default function Home() {
   const isWorking = isProcessing;
 
   const getFilteredNotesByCategory = (category: NoteCategory): Note[] => {
-    return notes.filter((n) => {
+    const filtered = notes.filter((n) => {
       if (n.category !== category) return false;
       if (!searchQuery) return true;
       const query = searchQuery.toLowerCase();
@@ -89,6 +92,21 @@ export default function Home() {
         n.content.toLowerCase().includes(query)
       );
     });
+    
+    const order = sortOrder[category];
+    return filtered.sort((a, b) => {
+      if (order === "alpha") {
+        return a.title.localeCompare(b.title);
+      }
+      return b.createdAt - a.createdAt;
+    });
+  };
+
+  const toggleSort = (category: NoteCategory) => {
+    setSortOrder((prev) => ({
+      ...prev,
+      [category]: prev[category] === "date" ? "alpha" : "date",
+    }));
   };
 
   const getFilteredNotes = (): Note[] => {
@@ -365,7 +383,14 @@ export default function Home() {
                 <div className="flex items-center gap-2 text-zinc-300">
                   {cat.icon}
                   <span className="font-medium">{cat.label}</span>
-                  <span className="ml-auto text-zinc-500 text-sm">
+                  <button
+                    onClick={() => toggleSort(cat.id)}
+                    className="ml-auto p-1 text-zinc-500 hover:text-zinc-300"
+                    title={sortOrder[cat.id] === "date" ? "Sortuj alfabetycznie" : "Sortuj po dacie"}
+                  >
+                    <ArrowUpDown className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-zinc-500 text-sm">
                     {getFilteredNotesByCategory(cat.id).length}
                   </span>
                 </div>
