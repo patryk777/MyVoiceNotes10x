@@ -123,7 +123,18 @@ Zrób dokładne review kodu i popraw:
 - Dodaj typy dla API responses
 ```
 
-### 11. Zabezpieczenia API
+### 11. Testy E2E
+
+```
+Dodaj testy Playwright E2E:
+- Testy ładowania strony i UI
+- Testy responsywności (mobile, tablet, desktop)
+- Testy ustawień i modali
+- Testy skrótów klawiszowych
+- Testy empty state
+```
+
+### 12. Zabezpieczenia API
 
 ```
 Dodaj zabezpieczenia przed nadmiernym zużyciem tokenów:

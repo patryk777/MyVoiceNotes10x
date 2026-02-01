@@ -128,19 +128,26 @@ npm run test:e2e:ui     # interaktywny UI
 
 ```
 e2e/
-└── app.spec.ts                    (21 testów)
-    ├── Page Load (3)
-    ├── Kanban Board (2)
-    ├── Search Functionality (2)
-    ├── Action Bar (3)
-    ├── Settings Modal (2)
-    ├── Recording Section (2)
-    ├── Keyboard Shortcuts (1)
-    ├── Archive Toggle (1)
-    ├── Summarize Feature (1)
-    ├── Accessibility (2)
-    ├── Dark Theme (1)
-    └── LocalStorage Persistence (1)
+├── app.spec.ts                    (21 testów)
+│   ├── Page Load (3)
+│   ├── Kanban Board (2)
+│   ├── Search Functionality (2)
+│   ├── Action Bar (3)
+│   ├── Settings Modal (2)
+│   ├── Recording Section (2)
+│   ├── Keyboard Shortcuts (1)
+│   ├── Archive Toggle (1)
+│   ├── Summarize Feature (1)
+│   ├── Accessibility (2)
+│   ├── Dark Theme (1)
+│   └── LocalStorage Persistence (1)
+└── notes.spec.ts                  (20 testów)
+    ├── Category Columns (4)
+    ├── Export Buttons (2)
+    ├── Settings Functionality (4)
+    ├── Responsive Design (4)
+    ├── Keyboard Shortcuts (3)
+    └── Empty State (3)
 ```
 
 ## 🔒 Zabezpieczenia API
@@ -192,8 +199,9 @@ To pozwala na **bardzo szybkie dostarczanie funkcjonalności** bez ciągłego t�
 1. **Pair Programming z AI** - Cascade jako asystent programistyczny
 2. **Iteracyjne budowanie** - funkcja po funkcji z natychmiastowym testowaniem
 3. **Git Flow** - feature branches z automatycznymi commit messages
-4. **Testy generowane przez AI** - 70 testów jednostkowych
+4. **Testy generowane przez AI** - 169 testów jednostkowych
 5. **Code Review przez AI** - refaktor i optymalizacja
+6. **E2E testy Playwright** - 41 testów end-to-end
 
 ### Narzędzia AI użyte w projekcie:
 - **Windsurf Cascade** - główne IDE i asystent
