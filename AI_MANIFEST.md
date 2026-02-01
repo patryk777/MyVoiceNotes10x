@@ -104,10 +104,11 @@ Wygeneruj AI_MANIFEST.md z promptami.
 
 | Metryka | Wartość |
 |---------|---------|
-| **Commity** | 25+ |
-| **Testy** | 70 |
-| **Pliki** | 40+ |
-| **Linie kodu** | ~3500 |
+| **Commity** | 30+ |
+| **Testy** | 153 |
+| **Pokrycie testami** | 87% |
+| **Pliki** | 50+ |
+| **Linie kodu** | ~4000 |
 | **Komponenty** | 9 |
 | **Hooki** | 3 |
 | **API Routes** | 6 |
@@ -147,7 +148,8 @@ main
 ├── test/components-hooks
 ├── feat/documentation
 ├── refactor/notecard-components
-└── fix/code-review-issues
+├── fix/code-review-issues
+└── test/additional-coverage
 ```
 
 ## 🎯 Wnioski
