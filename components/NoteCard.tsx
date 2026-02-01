@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash, Wand2, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Note, NoteColor } from "@/hooks/useNotes";
+import { Note, NoteColor, NoteCategory } from "@/hooks/useNotes";
 
 const NOTE_COLORS: { id: NoteColor; bg: string; border: string }[] = [
   { id: "default", bg: "bg-zinc-800", border: "border-zinc-700" },
@@ -23,9 +23,10 @@ interface NoteCardProps {
   onDragStart: (e: React.DragEvent, noteId: string) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
+  onCategoryChange?: (id: string, category: NoteCategory) => void;
 }
 
-export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onUnarchive }: NoteCardProps) {
+export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onUnarchive, onCategoryChange }: NoteCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(note.title);
@@ -38,6 +39,8 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const [editColor, setEditColor] = useState<NoteColor>(note.color || "default");
   const [editReminder, setEditReminder] = useState(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
   const [editImages, setEditImages] = useState<string[]>(note.images || []);
+  const [isSuggestingCategory, setIsSuggestingCategory] = useState(false);
+  const [suggestedCategory, setSuggestedCategory] = useState<NoteCategory | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -75,6 +78,28 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
 
   const removeImage = (index: number) => {
     setEditImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const suggestCategory = async () => {
+    if (!editTitle && !editContent) return;
+    setIsSuggestingCategory(true);
+    setSuggestedCategory(null);
+    try {
+      const res = await fetch("/api/suggest-category", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: editTitle, content: editContent }),
+      });
+      const data = await res.json();
+      const validCategories: NoteCategory[] = ["tasks", "ideas", "notes", "meetings"];
+      if (validCategories.includes(data.category)) {
+        setSuggestedCategory(data.category as NoteCategory);
+      }
+    } catch (err) {
+      console.error("Category suggestion error:", err);
+    } finally {
+      setIsSuggestingCategory(false);
+    }
   };
 
   const handleCancel = () => {
@@ -246,6 +271,27 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={suggestCategory}
+              disabled={isSuggestingCategory || (!editTitle && !editContent)}
+              className="flex items-center gap-1 px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded text-xs disabled:opacity-50"
+            >
+              {isSuggestingCategory ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
+              AI Kategoria
+            </button>
+            {suggestedCategory && onCategoryChange && (
+              <button
+                onClick={() => {
+                  onCategoryChange(note.id, suggestedCategory);
+                  setSuggestedCategory(null);
+                }}
+                className="text-xs text-purple-400 hover:text-purple-300"
+              >
+                Przenieś do: {suggestedCategory === "tasks" ? "Zadania" : suggestedCategory === "ideas" ? "Pomysły" : suggestedCategory === "meetings" ? "Spotkania" : "Notatki"}
+              </button>
             )}
           </div>
           <div className="flex justify-between text-xs text-zinc-500">

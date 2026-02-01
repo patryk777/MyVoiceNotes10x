@@ -459,6 +459,7 @@ export default function Home() {
                     onDragStart={handleDragStart}
                     onArchive={archiveNote}
                     onUnarchive={unarchiveNote}
+                    onCategoryChange={updateNoteCategory}
                   />
                 ))}
                 {getFilteredNotesByCategory(cat.id).length === 0 && (
