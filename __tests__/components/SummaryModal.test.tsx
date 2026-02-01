@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SummaryModal } from "@/components/SummaryModal";
+import { SummaryModal } from "@/components/modals/SummaryModal";
 
 jest.mock("@/lib/export", () => ({
   exportSummaryToPdf: jest.fn(),

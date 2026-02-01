@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SettingsModal } from "@/components/SettingsModal";
+import { SettingsModal } from "@/components/modals/SettingsModal";
 import { Settings } from "@/hooks/useSettings";
 
 const mockSettings: Settings = {

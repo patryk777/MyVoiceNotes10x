@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { NoteCard } from "@/components/NoteCard";
+import { NoteCard } from "@/components/notes/NoteCard";
 import { Note } from "@/hooks/useNotes";
 
 // Mock fetch for AI features

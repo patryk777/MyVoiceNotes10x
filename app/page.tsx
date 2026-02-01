@@ -4,12 +4,12 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
 import { useSettings } from "@/hooks/useSettings";
-import { SettingsModal } from "@/components/SettingsModal";
+import { SettingsModal } from "@/components/modals/SettingsModal";
 import { RecordingSection } from "@/components/RecordingSection";
 import { ActionBar } from "@/components/ActionBar";
-import { SummaryModal } from "@/components/SummaryModal";
-import { KanbanBoard } from "@/components/KanbanBoard";
-import { HelpModal } from "@/components/HelpModal";
+import { SummaryModal } from "@/components/modals/SummaryModal";
+import { KanbanBoard } from "@/components/notes/KanbanBoard";
+import { HelpModal } from "@/components/modals/HelpModal";
 import { exportToMarkdown, exportToPdf } from "@/lib/export";
 
 const CATEGORIES_FOR_EXPORT = [

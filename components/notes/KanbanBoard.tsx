@@ -2,7 +2,7 @@
 
 import { ArrowUpDown, CheckSquare, Lightbulb, FileText, Calendar } from "lucide-react";
 import { Note, NoteCategory, NoteColor } from "@/hooks/useNotes";
-import { NoteCard } from "@/components/NoteCard";
+import { NoteCard } from "@/components/notes/NoteCard";
 
 interface KanbanBoardProps {
   notes: Note[];

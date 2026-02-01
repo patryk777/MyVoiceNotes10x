@@ -7,7 +7,7 @@ import { Note, NoteColor, NoteCategory, NoteVersion } from "@/hooks/useNotes";
 import { NOTE_COLORS } from "@/lib/constants";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 import { HistoryModal } from "@/components/modals/HistoryModal";
-import { NoteEditForm } from "@/components/NoteEditForm";
+import { NoteEditForm } from "@/components/notes/NoteEditForm";
 import { useSettings } from "@/hooks/useSettings";
 
 interface NoteCardProps {

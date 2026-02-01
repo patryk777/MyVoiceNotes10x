@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { NoteCard } from "@/components/NoteCard";
+import { NoteCard } from "@/components/notes/NoteCard";
 import { Note } from "@/hooks/useNotes";
 
 const mockNote: Note = {

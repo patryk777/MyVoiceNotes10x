@@ -1,9 +1,9 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { KanbanBoard } from "@/components/KanbanBoard";
+import { KanbanBoard } from "@/components/notes/KanbanBoard";
 import { Note } from "@/hooks/useNotes";
 
-jest.mock("@/components/NoteCard", () => ({
+jest.mock("@/components/notes/NoteCard", () => ({
   NoteCard: ({ note, onDelete }: { note: Note; onDelete: (id: string) => void }) => (
     <div data-testid={`note-${note.id}`}>
       <span>{note.title}</span>

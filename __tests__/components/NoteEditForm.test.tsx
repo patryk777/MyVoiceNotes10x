@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { NoteEditForm } from "@/components/NoteEditForm";
+import { NoteEditForm } from "@/components/notes/NoteEditForm";
 
 const mockT = (key: string) => key;
 
