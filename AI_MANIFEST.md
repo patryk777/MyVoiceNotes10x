@@ -11,6 +11,23 @@
 
 ---
 
+## 📅 Timeline projektu
+
+| Faza | Czas | Opis |
+|------|------|------|
+| **Inicjalizacja** | ~30 min | Setup Next.js, struktura, podstawowe komponenty |
+| **Core Features** | ~2h | Nagrywanie, transkrypcja, przetwarzanie AI |
+| **Kanban Board** | ~1h | Kolumny, drag-and-drop, responsywność |
+| **Rozszerzenia UI** | ~2h | Sortowanie, animacje, skróty klawiszowe |
+| **Zarządzanie notatkami** | ~2h | Undo, tagi, kolory, archiwum, historia |
+| **AI Features** | ~1.5h | Sugestie kategorii/tagów, tłumaczenie, podsumowanie |
+| **Ustawienia** | ~30 min | i18n, limity nagrania |
+| **Testy jednostkowe** | ~3h | 169 testów Jest |
+| **Testy E2E** | ~1h | 41 testów Playwright |
+| **Dokumentacja** | ~1h | README, AI_MANIFEST |
+| **Review & Refaktor** | ~1h | Code review, poprawki |
+| **Łącznie** | **~15h** | Rozciągnięte na kilka sesji |
+
 ## 🤖 Narzędzia AI
 
 | Narzędzie | Rola | Zastosowanie |
@@ -24,27 +41,54 @@
 
 ### 1. Inicjalizacja projektu
 
+**Prompt:**
 ```
 Zbuduj aplikację "Voice to Structure" - notatki głosowe z AI.
 Stack: Next.js 15, TypeScript, Tailwind CSS, Vercel AI SDK.
 Architektura: localStorage, bez auth, streaming LLM.
 ```
 
+**Wygenerowane pliki:**
+- `app/page.tsx` - główny komponent
+- `app/layout.tsx` - root layout z dark theme
+- `hooks/useNotes.ts` - CRUD dla notatek
+- `hooks/useRecorder.ts` - nagrywanie audio
+- `lib/constants.ts` - stałe (kategorie, kolory)
+
 ### 2. Core Features
 
+**Prompt:**
 ```
 Dodaj nagrywanie audio z automatyczną transkrypcją Whisper.
 Po transkrypcji przetwórz z GPT-4o na strukturyzowaną notatkę.
 Kategoryzuj automatycznie: tasks, ideas, notes, meetings.
 ```
 
+**Wygenerowane API routes:**
+- `app/api/transcribe/route.ts` - Whisper STT
+- `app/api/process/route.ts` - GPT-4o z Zod schema
+
+**Kluczowe decyzje:**
+- Użycie `generateObject` z Vercel AI SDK dla typowanego outputu
+- Zod schema dla walidacji odpowiedzi AI
+- FormData dla przesyłania audio
+
 ### 3. Kanban Board
 
+**Prompt:**
 ```
 Stwórz widok Kanban z 4 kolumnami.
 Drag-and-drop między kategoriami.
 Responsywny: 1 kolumna mobile, 2 tablet, 4 desktop.
 ```
+
+**Wygenerowane komponenty:**
+- `components/KanbanBoard.tsx` - kontener kolumn
+- `components/NoteCard.tsx` - karta notatki
+
+**Implementacja drag-and-drop:**
+- Native HTML5 Drag API (`draggable`, `onDragStart`, `onDrop`)
+- Bez zewnętrznych bibliotek (prostota)
 
 ### 4. Rozszerzenia UI
 
@@ -72,6 +116,7 @@ Dodaj:
 
 ### 6. AI Features
 
+**Prompt:**
 ```
 Dodaj:
 - AI sugestia kategorii podczas edycji
@@ -79,6 +124,16 @@ Dodaj:
 - Tłumaczenie notatek na różne języki
 - Podsumowanie AI wszystkich notatek
 ```
+
+**Wygenerowane API routes:**
+- `app/api/suggest-category/route.ts` - GPT-4o-mini
+- `app/api/suggest-tags/route.ts` - GPT-4o-mini
+- `app/api/translate/route.ts` - GPT-4o-mini
+- `app/api/summarize/route.ts` - GPT-4o
+
+**Optymalizacja kosztów:**
+- GPT-4o-mini dla prostych zadań (kategorie, tagi, tłumaczenie)
+- GPT-4o tylko dla złożonych (przetwarzanie, podsumowanie)
 
 ### 7. Ustawienia
 
@@ -89,14 +144,30 @@ Dodaj ustawienia:
 - Limit nagrania (suwak 10s-5min)
 ```
 
-### 8. Testy
+### 8. Testy jednostkowe
 
+**Prompt:**
 ```
 Dodaj testy lokalne (bez API):
 - Testy hooków (useNotes, useSettings, useRecorder)
 - Testy komponentów (NoteCard, SettingsModal)
 - Mock fetch dla AI features
 ```
+
+**Struktura testów:**
+```
+__tests__/
+├── hooks/           # 40 testów
+├── components/      # 95 testów
+├── lib/             # 25 testów
+└── api/             # 16 testów (walidacja)
+```
+
+**Mockowanie:**
+- `localStorage` - custom mock
+- `MediaRecorder` - mock API
+- `fetch` - jest.fn()
+- `react-markdown` - prosty mock (ESM issue)
 
 ### 9. Dokumentacja
 
@@ -138,6 +209,7 @@ Zrób dokładne review kodu i popraw:
 
 ### 11. Testy E2E
 
+**Prompt:**
 ```
 Dodaj testy Playwright E2E:
 - Testy ładowania strony i UI
@@ -147,8 +219,18 @@ Dodaj testy Playwright E2E:
 - Testy empty state
 ```
 
+**Pliki testów:**
+- `e2e/app.spec.ts` - 21 testów (główne UI)
+- `e2e/notes.spec.ts` - 20 testów (interakcje)
+
+**Konfiguracja Playwright:**
+- Auto-start dev server
+- Chromium only (szybkość)
+- Screenshots on failure
+
 ### 12. Zabezpieczenia API
 
+**Prompt:**
 ```
 Dodaj zabezpieczenia przed nadmiernym zużyciem tokenów:
 - Limity długości inputów dla każdego endpointu
@@ -156,6 +238,15 @@ Dodaj zabezpieczenia przed nadmiernym zużyciem tokenów:
 - Whitelist dozwolonych wartości (np. języki)
 - Limity rozmiaru plików
 ```
+
+**Zaimplementowane limity:**
+| Endpoint | Limit |
+|----------|-------|
+| `/api/transcribe` | 25MB (Whisper limit) |
+| `/api/process` | 10,000 znaków |
+| `/api/summarize` | 50 notatek, 50,000 znaków |
+| `/api/suggest-*` | 5,000 znaków |
+| `/api/translate` | 10,000 znaków + whitelist języków |
 
 ## 🔄 Git Flow
 
