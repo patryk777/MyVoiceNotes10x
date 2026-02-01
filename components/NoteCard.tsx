@@ -1,20 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash, Wand2, Loader2, Tags, Languages } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Bell, Archive, ArchiveRestore, History } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Note, NoteColor, NoteCategory } from "@/hooks/useNotes";
-
-const NOTE_COLORS: { id: NoteColor; bg: string; border: string }[] = [
-  { id: "default", bg: "bg-zinc-800", border: "border-zinc-700" },
-  { id: "red", bg: "bg-red-900/50", border: "border-red-700" },
-  { id: "orange", bg: "bg-orange-900/50", border: "border-orange-700" },
-  { id: "yellow", bg: "bg-yellow-900/50", border: "border-yellow-700" },
-  { id: "green", bg: "bg-green-900/50", border: "border-green-700" },
-  { id: "blue", bg: "bg-blue-900/50", border: "border-blue-700" },
-  { id: "purple", bg: "bg-purple-900/50", border: "border-purple-700" },
-  { id: "pink", bg: "bg-pink-900/50", border: "border-pink-700" },
-];
+import { Note, NoteColor, NoteCategory, NoteVersion } from "@/hooks/useNotes";
+import { NOTE_COLORS } from "@/lib/constants";
+import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { HistoryModal } from "@/components/modals/HistoryModal";
+import { NoteEditForm } from "@/components/NoteEditForm";
+import { useSettings } from "@/hooks/useSettings";
 
 interface NoteCardProps {
   note: Note;
@@ -27,24 +21,15 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onUnarchive, onCategoryChange }: NoteCardProps) {
+  const { t } = useSettings();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(note.title);
-  const [editContent, setEditContent] = useState(note.content);
   const [isTruncated, setIsTruncated] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [editTags, setEditTags] = useState(note.tags?.join(", ") || "");
-  const [editColor, setEditColor] = useState<NoteColor>(note.color || "default");
-  const [editReminder, setEditReminder] = useState(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
-  const [editImages, setEditImages] = useState<string[]>(note.images || []);
-  const [isSuggestingCategory, setIsSuggestingCategory] = useState(false);
-  const [suggestedCategory, setSuggestedCategory] = useState<NoteCategory | null>(null);
-  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
-  const [isTranslating, setIsTranslating] = useState(false);
+  const [restoredVersion, setRestoredVersion] = useState<NoteVersion | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -52,181 +37,46 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
     }
   }, [note.content]);
 
-  const handleSave = () => {
-    const tags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
-    const reminder = editReminder ? new Date(editReminder).getTime() : null;
-    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined, editColor, reminder, editImages.length > 0 ? editImages : undefined);
+  const handleSave = (title: string, content: string, tags: string[], color: NoteColor, reminder: number | null, images: string[]) => {
+    onUpdate(note.id, title, content, tags.length > 0 ? tags : undefined, color, reminder, images.length > 0 ? images : undefined);
     setIsEditing(false);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    
-    Array.from(files).forEach((file) => {
-      if (file.size > 500000) {
-        alert("Plik jest za duży (max 500KB)");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setEditImages((prev) => [...prev, base64]);
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = "";
-  };
-
-  const removeImage = (index: number) => {
-    setEditImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const suggestCategory = async () => {
-    if (!editTitle && !editContent) return;
-    setIsSuggestingCategory(true);
-    setSuggestedCategory(null);
-    try {
-      const res = await fetch("/api/suggest-category", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: editTitle, content: editContent }),
-      });
-      const data = await res.json();
-      const validCategories: NoteCategory[] = ["tasks", "ideas", "notes", "meetings"];
-      if (validCategories.includes(data.category)) {
-        setSuggestedCategory(data.category as NoteCategory);
-      }
-    } catch (err) {
-      console.error("Category suggestion error:", err);
-    } finally {
-      setIsSuggestingCategory(false);
-    }
-  };
-
-  const suggestTags = async () => {
-    if (!editTitle && !editContent) return;
-    setIsSuggestingTags(true);
-    try {
-      const res = await fetch("/api/suggest-tags", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: editTitle, content: editContent }),
-      });
-      const data = await res.json();
-      if (data.tags && data.tags.length > 0) {
-        const currentTags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
-        const newTags = [...new Set([...currentTags, ...data.tags])];
-        setEditTags(newTags.join(", "));
-      }
-    } catch (err) {
-      console.error("Tags suggestion error:", err);
-    } finally {
-      setIsSuggestingTags(false);
-    }
-  };
-
-  const translateNote = async (targetLanguage: string) => {
-    if (!editTitle && !editContent) return;
-    setIsTranslating(true);
-    try {
-      const res = await fetch("/api/translate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: editTitle, content: editContent, targetLanguage }),
-      });
-      const data = await res.json();
-      if (data.title) setEditTitle(data.title);
-      if (data.content) setEditContent(data.content);
-    } catch (err) {
-      console.error("Translation error:", err);
-    } finally {
-      setIsTranslating(false);
-    }
+    setRestoredVersion(null);
   };
 
   const handleCancel = () => {
-    setEditTitle(note.title);
-    setEditContent(note.content);
-    setEditTags(note.tags?.join(", ") || "");
-    setEditColor(note.color || "default");
-    setEditReminder(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
-    setEditImages(note.images || []);
     setIsEditing(false);
+    setRestoredVersion(null);
+  };
+
+  const handleRestoreVersion = (version: NoteVersion) => {
+    setRestoredVersion(version);
+    setShowHistory(false);
+    setIsEditing(true);
   };
 
   const colorStyle = NOTE_COLORS.find((c) => c.id === (note.color || "default")) || NOTE_COLORS[0];
 
   return (
     <>
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 rounded-lg border border-zinc-700 p-4 max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-2">Usuń notatkę?</h3>
-            <p className="text-zinc-400 text-sm mb-4">
-              Czy na pewno chcesz usunąć "{note.title}"? Tej akcji nie można cofnąć.
-            </p>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 rounded text-sm"
-              >
-                Anuluj
-              </button>
-              <button
-                onClick={() => {
-                  onDelete(note.id);
-                  setShowDeleteConfirm(false);
-                }}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded text-sm"
-              >
-                Usuń
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteConfirmModal
+          noteTitle={note.title}
+          onConfirm={() => {
+            onDelete(note.id);
+            setShowDeleteConfirm(false);
+          }}
+          onCancel={() => setShowDeleteConfirm(false)}
+          t={t}
+        />
       )}
 
-      {/* History Modal */}
       {showHistory && note.versions && note.versions.length > 0 && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 rounded-lg border border-zinc-700 p-4 max-w-lg w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <History className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-semibold">Historia zmian</h3>
-              </div>
-              <button onClick={() => setShowHistory(false)} className="p-1 text-zinc-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto space-y-3">
-              {[...note.versions].reverse().map((version, idx) => (
-                <div key={idx} className="bg-zinc-800 rounded p-3 border border-zinc-700">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-sm">{version.title}</span>
-                    <span className="text-xs text-zinc-500">
-                      {new Date(version.timestamp).toLocaleString("pl-PL")}
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-400 line-clamp-3">{version.content}</p>
-                  <button
-                    onClick={() => {
-                      setEditTitle(version.title);
-                      setEditContent(version.content);
-                      setShowHistory(false);
-                      setIsEditing(true);
-                    }}
-                    className="mt-2 text-xs text-blue-400 hover:text-blue-300"
-                  >
-                    Przywróć tę wersję
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <HistoryModal
+          versions={note.versions}
+          onRestore={handleRestoreVersion}
+          onClose={() => setShowHistory(false)}
+          t={t}
+        />
       )}
 
       <div
@@ -241,266 +91,137 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
         }`}
       >
         {isEditing ? (
-        <div className="space-y-2">
-          <input
-            type="text"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-200 focus:outline-none focus:border-blue-500"
+          <NoteEditForm
+            initialTitle={restoredVersion?.title || note.title}
+            initialContent={restoredVersion?.content || note.content}
+            initialTags={note.tags || []}
+            initialColor={note.color || "default"}
+            initialReminder={note.reminder}
+            initialImages={note.images || []}
+            noteId={note.id}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            onCategoryChange={onCategoryChange}
+            t={t}
           />
-          <textarea
-            value={editContent}
-            onChange={(e) => setEditContent(e.target.value)}
-            rows={6}
-            className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-300 focus:outline-none focus:border-blue-500 resize-none"
-          />
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={editTags}
-              onChange={(e) => setEditTags(e.target.value)}
-              placeholder="Tagi (oddzielone przecinkami)"
-              className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
-            />
-            <button
-              onClick={suggestTags}
-              disabled={isSuggestingTags || (!editTitle && !editContent)}
-              className="flex items-center gap-1 px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded text-xs disabled:opacity-50"
-              title="Generuj tagi AI"
-            >
-              {isSuggestingTags ? <Loader2 className="w-3 h-3 animate-spin" /> : <Tags className="w-3 h-3" />}
-            </button>
-          </div>
-          <div className="flex gap-1">
-            {NOTE_COLORS.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setEditColor(c.id)}
-                className={`w-5 h-5 rounded ${c.bg} ${c.border} border ${editColor === c.id ? "ring-2 ring-white" : ""}`}
-                title={c.id}
-              />
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <Bell className="w-3.5 h-3.5 text-zinc-500" />
-            <input
-              type="datetime-local"
-              value={editReminder}
-              onChange={(e) => setEditReminder(e.target.value)}
-              className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
-            />
-            {editReminder && (
-              <button onClick={() => setEditReminder("")} className="text-zinc-500 hover:text-red-400">
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
-          <div className="space-y-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1 px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs"
-            >
-              <ImagePlus className="w-3 h-3" /> Dodaj zdjęcie
-            </button>
-            {editImages.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {editImages.map((img, idx) => (
-                  <div key={idx} className="relative">
-                    <img src={img} alt="" className="w-16 h-16 object-cover rounded" />
+        ) : (
+          <>
+            <div className="flex items-start justify-between gap-2">
+              <h3
+                className="font-medium text-sm text-zinc-200 line-clamp-2 cursor-pointer hover:text-white"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {note.title}
+              </h3>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="p-1 text-zinc-500 hover:text-blue-400"
+                  aria-label="Edit note"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+                {note.versions && note.versions.length > 0 && (
+                  <button
+                    onClick={() => setShowHistory(true)}
+                    className="p-1 text-zinc-500 hover:text-blue-400"
+                    aria-label="View history"
+                  >
+                    <History className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                {note.archived ? (
+                  onUnarchive && (
                     <button
-                      onClick={() => removeImage(idx)}
-                      className="absolute -top-1 -right-1 bg-red-600 rounded-full p-0.5"
+                      onClick={() => onUnarchive(note.id)}
+                      className="p-1 text-zinc-500 hover:text-green-400"
+                      aria-label="Restore from archive"
                     >
-                      <X className="w-3 h-3" />
+                      <ArchiveRestore className="w-3.5 h-3.5" />
                     </button>
-                  </div>
+                  )
+                ) : (
+                  onArchive && (
+                    <button
+                      onClick={() => onArchive(note.id)}
+                      className="p-1 text-zinc-500 hover:text-yellow-400"
+                      aria-label="Archive note"
+                    >
+                      <Archive className="w-3.5 h-3.5" />
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="p-1 text-zinc-500 hover:text-red-500"
+                  aria-label="Delete note"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <div
+              ref={contentRef}
+              className={`mt-2 text-xs text-zinc-300 prose prose-invert prose-xs 
+                prose-headings:text-zinc-200 prose-headings:font-semibold prose-headings:mt-2 prose-headings:mb-1
+                prose-p:my-1 prose-p:leading-relaxed
+                prose-strong:text-zinc-100 prose-strong:font-semibold
+                prose-ul:my-1 prose-ul:pl-4 prose-li:my-0.5
+                prose-ol:my-1 prose-ol:pl-4
+                prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+                ${isExpanded ? "" : "line-clamp-3"}`}
+            >
+              <ReactMarkdown>{note.content}</ReactMarkdown>
+            </div>
+
+            {note.images && note.images.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {note.images.map((img, idx) => (
+                  <img key={idx} src={img} alt="" className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onClick={() => window.open(img, "_blank")} />
                 ))}
               </div>
             )}
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={suggestCategory}
-              disabled={isSuggestingCategory || (!editTitle && !editContent)}
-              className="flex items-center gap-1 px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded text-xs disabled:opacity-50"
-            >
-              {isSuggestingCategory ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-              AI Kategoria
-            </button>
-            {suggestedCategory && onCategoryChange && (
-              <button
-                onClick={() => {
-                  onCategoryChange(note.id, suggestedCategory);
-                  setSuggestedCategory(null);
-                }}
-                className="text-xs text-purple-400 hover:text-purple-300"
-              >
-                Przenieś do: {suggestedCategory === "tasks" ? "Zadania" : suggestedCategory === "ideas" ? "Pomysły" : suggestedCategory === "meetings" ? "Spotkania" : "Notatki"}
-              </button>
+
+            {note.tags && note.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {note.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-1.5 py-0.5 bg-zinc-700 text-zinc-300 text-[10px] rounded"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
             )}
-            <div className="flex items-center gap-1">
-              <Languages className="w-3 h-3 text-zinc-500" />
-              <select
-                onChange={(e) => e.target.value && translateNote(e.target.value)}
-                disabled={isTranslating || (!editTitle && !editContent)}
-                className="bg-zinc-900 border border-zinc-600 rounded px-1 py-0.5 text-xs text-zinc-300 disabled:opacity-50"
-                defaultValue=""
-              >
-                <option value="" disabled>Tłumacz...</option>
-                <option value="angielski">🇬🇧 Angielski</option>
-                <option value="niemiecki">🇩🇪 Niemiecki</option>
-                <option value="francuski">🇫🇷 Francuski</option>
-                <option value="hiszpański">🇪🇸 Hiszpański</option>
-                <option value="polski">🇵🇱 Polski</option>
-              </select>
-              {isTranslating && <Loader2 className="w-3 h-3 animate-spin text-blue-400" />}
-            </div>
-          </div>
-          <div className="flex justify-between text-xs text-zinc-500">
-            <span>{editTitle.length} znaków w tytule</span>
-            <span>{editContent.length} znaków w treści</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleSave}
-              className="flex items-center gap-1 px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs"
-            >
-              <Check className="w-3 h-3" /> Zapisz
-            </button>
-            <button
-              onClick={handleCancel}
-              className="flex items-center gap-1 px-2 py-1 bg-zinc-600 hover:bg-zinc-500 rounded text-xs"
-            >
-              <X className="w-3 h-3" /> Anuluj
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className="font-medium text-sm text-zinc-200 line-clamp-2 cursor-pointer hover:text-white"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {note.title}
-            </h3>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-1 text-zinc-500 hover:text-blue-400"
-                aria-label="Edit note"
-              >
-                <Pencil className="w-3.5 h-3.5" />
-              </button>
-              {note.versions && note.versions.length > 0 && (
+
+            {note.reminder && (
+              <div className={`flex items-center gap-1 mt-2 text-[10px] ${note.reminder < Date.now() ? "text-red-400" : "text-yellow-400"}`}>
+                <Bell className="w-3 h-3" />
+                <span>{new Date(note.reminder).toLocaleString()}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs text-zinc-600">
+                {new Date(note.createdAt).toLocaleDateString()}
+              </p>
+              {(isTruncated || isExpanded) && (
                 <button
-                  onClick={() => setShowHistory(true)}
-                  className="p-1 text-zinc-500 hover:text-blue-400"
-                  aria-label="View history"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-zinc-500 hover:text-zinc-300 p-1"
                 >
-                  <History className="w-3.5 h-3.5" />
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
                 </button>
               )}
-              {note.archived ? (
-                onUnarchive && (
-                  <button
-                    onClick={() => onUnarchive(note.id)}
-                    className="p-1 text-zinc-500 hover:text-green-400"
-                    aria-label="Restore from archive"
-                  >
-                    <ArchiveRestore className="w-3.5 h-3.5" />
-                  </button>
-                )
-              ) : (
-                onArchive && (
-                  <button
-                    onClick={() => onArchive(note.id)}
-                    className="p-1 text-zinc-500 hover:text-yellow-400"
-                    aria-label="Archive note"
-                  >
-                    <Archive className="w-3.5 h-3.5" />
-                  </button>
-                )
-              )}
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="p-1 text-zinc-500 hover:text-red-500"
-                aria-label="Delete note"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
             </div>
-          </div>
-
-          <div
-            ref={contentRef}
-            className={`mt-2 text-xs text-zinc-300 prose prose-invert prose-xs 
-              prose-headings:text-zinc-200 prose-headings:font-semibold prose-headings:mt-2 prose-headings:mb-1
-              prose-p:my-1 prose-p:leading-relaxed
-              prose-strong:text-zinc-100 prose-strong:font-semibold
-              prose-ul:my-1 prose-ul:pl-4 prose-li:my-0.5
-              prose-ol:my-1 prose-ol:pl-4
-              prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-              ${isExpanded ? "" : "line-clamp-3"}`}
-          >
-            <ReactMarkdown>{note.content}</ReactMarkdown>
-          </div>
-
-          {note.images && note.images.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {note.images.map((img, idx) => (
-                <img key={idx} src={img} alt="" className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onClick={() => window.open(img, "_blank")} />
-              ))}
-            </div>
-          )}
-
-          {note.tags && note.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {note.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-1.5 py-0.5 bg-zinc-700 text-zinc-300 text-[10px] rounded"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {note.reminder && (
-            <div className={`flex items-center gap-1 mt-2 text-[10px] ${note.reminder < Date.now() ? "text-red-400" : "text-yellow-400"}`}>
-              <Bell className="w-3 h-3" />
-              <span>{new Date(note.reminder).toLocaleString("pl-PL")}</span>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between mt-2">
-            <p className="text-xs text-zinc-600">
-              {new Date(note.createdAt).toLocaleDateString()}
-            </p>
-            {(isTruncated || isExpanded) && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="text-zinc-500 hover:text-zinc-300 p-1"
-              >
-                {isExpanded ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </button>
-            )}
-          </div>
-        </>
-      )}
+          </>
+        )}
       </div>
     </>
   );
