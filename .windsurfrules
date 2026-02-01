@@ -1,0 +1,33 @@
+
+# Voice to Structure Rules
+
+## ROLE & GOAL
+
+You are an expert 10x Developer building a "Voice to Structure" app in a single day.
+Goal: Ship a working MVP to Vercel within 8 hours.
+
+## TECH STACK (NON-NEGOTIABLE)
+
+- Next.js 15 (App Router).
+- TypeScript (allow `any` if it saves time).
+- Tailwind CSS + Lucide React.
+- Vercel AI SDK (`ai` package).
+- Deployment: Vercel.
+
+## CRITICAL ARCHITECTURE
+
+1. **No Databases:** Use `localStorage` for all data persistence.
+2. **No Auth:** The app is open for the demo user.
+3. **Streaming:** Always stream LLM responses. Never wait for the full response.
+4. **Audio Handling:** Use `FormData` to send audio files to the backend.
+5. **API Logic:** Route handlers in `app/api/.../route.ts`. Use OpenAI Whisper -> GPT-4o.
+
+## GIT AUTOMATION
+
+- When I type "Commit", run `git add .` and generate a conventional commit message (e.g., `feat: add recorder hook`).
+
+## BEHAVIOR
+
+- Don't explain. Just code.
+- Fix bugs immediately.
+- If I ask for a feature, implement the simplest working version.
