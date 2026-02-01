@@ -1,27 +1,42 @@
-# MyVoiceNotes10x
+<div align="center">
 
-> 🎙️ **AI-Powered Voice Notes** - Zamień głos w uporządkowane notatki z automatyczną kategoryzacją
+# 🎙️ MyVoiceNotes10x
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-210%20passed-green)](./package.json)
+### AI-Powered Voice Notes - Zamień głos w uporządkowane notatki
 
-## 📋 Cel projektu
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
 
-MyVoiceNotes to aplikacja do tworzenia notatek głosowych z automatyczną transkrypcją i kategoryzacją AI. Projekt powstał w ramach kursu **10xdevs 2.0** jako alternatywa dla komercyjnych rozwiązań.
+[![Tests](https://img.shields.io/badge/Tests-210%20passed-success?style=flat-square)](./package.json)
+[![Coverage](https://img.shields.io/badge/Coverage-87%25-brightgreen?style=flat-square)](./package.json)
+[![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](./LICENSE)
+[![10xDevs](https://img.shields.io/badge/10xDevs-2.0-purple?style=flat-square)](https://10xdevs.pl)
 
-### Główne funkcje:
-- 🎤 **Nagrywanie głosu** z automatyczną transkrypcją (OpenAI Whisper)
-- 🤖 **AI Processing** - automatyczna kategoryzacja i strukturyzacja (GPT-4o)
-- 📊 **Kanban Board** - organizacja notatek w 4 kategoriach (Zadania, Pomysły, Notatki, Spotkania)
-- 🔍 **Wyszukiwanie** - szybkie filtrowanie notatek
-- 📤 **Eksport** - Markdown i PDF
-- 🏷️ **Tagi i kolory** - organizacja wizualna
-- ⏰ **Przypomnienia** - ustawianie terminów
-- 📜 **Historia wersji** - przywracanie poprzednich wersji
-- 🌍 **Wielojęzyczność** - interfejs PL/EN, tłumaczenie notatek
-- 📱 **Mobile First** - responsywny design
+**[Demo](https://myvoicenotes10x.vercel.app)** · **[Dokumentacja](#-instrukcja-uruchomienia)** · **[AI Manifest](./AI_MANIFEST.md)**
+
+</div>
+
+---
+
+## 📋 O projekcie
+
+> **MyVoiceNotes** to aplikacja do tworzenia notatek głosowych z automatyczną transkrypcją i kategoryzacją AI. Projekt powstał w ramach kursu **[10xDevs 2.0](https://10xdevs.pl)** jako alternatywa dla komercyjnych rozwiązań.
+
+### ✨ Główne funkcje
+| Funkcja | Opis |
+|---------|------|
+| 🎤 **Nagrywanie głosu** | Automatyczna transkrypcja z OpenAI Whisper |
+| 🤖 **AI Processing** | Kategoryzacja i strukturyzacja z GPT-4o |
+| 📊 **Kanban Board** | 4 kategorie: Zadania, Pomysły, Notatki, Spotkania |
+| 🔍 **Wyszukiwanie** | Szybkie filtrowanie notatek |
+| 📤 **Eksport** | Markdown i PDF |
+| 🏷️ **Tagi i kolory** | Organizacja wizualna |
+| ⏰ **Przypomnienia** | Ustawianie terminów |
+| 📜 **Historia wersji** | Przywracanie poprzednich wersji |
+| 🌍 **Wielojęzyczność** | Interfejs PL/EN, tłumaczenie notatek |
+| 📱 **Mobile First** | Responsywny design |
 
 ## 🛠️ Stack technologiczny
 
@@ -36,20 +51,44 @@ MyVoiceNotes to aplikacja do tworzenia notatek głosowych z automatyczną transk
 | **Jest** | 30 | Testy jednostkowe |
 | **React Testing Library** | 16 | Testy komponentów |
 
-### Architektura:
-- **No Database** - localStorage dla persystencji danych
-- **No Auth** - aplikacja demo bez uwierzytelniania
-- **Streaming** - strumieniowanie odpowiedzi LLM
-- **FormData** - przesyłanie audio do backendu
+### Architektura
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Frontend                              │
+│  Next.js 15 (App Router) + React 19 + Tailwind CSS 4        │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      API Routes                              │
+│  /api/transcribe  │  /api/process  │  /api/summarize        │
+│  /api/suggest-*   │  /api/translate                         │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       OpenAI API                             │
+│           Whisper (STT)  │  GPT-4o (Processing)             │
+└─────────────────────────────────────────────────────────────┘
+
+📦 Storage: localStorage (no database)
+🔐 Auth: none (demo mode)
+🌊 Streaming: Vercel AI SDK
+```
 
 ## 🚀 Instrukcja uruchomienia
 
-### Wymagania:
+<details>
+<summary><b>📋 Wymagania</b></summary>
+
 - Node.js 18+
 - npm lub yarn
 - Klucz API OpenAI
 
-### Instalacja:
+</details>
+
+### Instalacja
 
 ```bash
 # Klonowanie repozytorium
@@ -64,22 +103,17 @@ cp .env.example .env.local
 # Edytuj .env.local i dodaj OPENAI_API_KEY
 ```
 
-### Uruchomienie:
+### Uruchomienie
 
 ```bash
-# Development
-npm run dev
-
-# Production build
-npm run build
-npm start
-
-# Testy
-npm test
-npm run test:watch
+npm run dev          # Development server
+npm run build        # Production build
+npm start            # Start production
+npm test             # Run unit tests
+npm run test:e2e     # Run E2E tests
 ```
 
-### Zmienne środowiskowe:
+### Zmienne środowiskowe
 
 ```env
 OPENAI_API_KEY=sk-your-api-key-here
@@ -87,13 +121,18 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 ## 🧪 Testy
 
-Projekt zawiera **210 testów** (169 unit + 41 E2E):
+<div align="center">
 
-### Unit testy (Jest)
+| Typ | Ilość | Pokrycie |
+|-----|-------|----------|
+| **Unit (Jest)** | 169 | 87% |
+| **E2E (Playwright)** | 41 | - |
+| **Łącznie** | **210** | - |
 
-```bash
-npm test
-```
+</div>
+
+<details>
+<summary><b>📁 Struktura testów jednostkowych</b></summary>
 
 ```
 __tests__/
@@ -118,7 +157,10 @@ __tests__/
     └── validation.test.ts         (16 testów)
 ```
 
-### E2E testy (Playwright)
+</details>
+
+<details>
+<summary><b>🎭 Testy E2E (Playwright)</b></summary>
 
 ```bash
 npm run test:e2e        # headless
@@ -149,6 +191,8 @@ e2e/
     ├── Keyboard Shortcuts (3)
     └── Empty State (3)
 ```
+
+</details>
 
 ## 🔒 Zabezpieczenia API
 
