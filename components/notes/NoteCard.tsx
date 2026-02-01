@@ -95,6 +95,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
       )}
 
       <div
+        data-testid={`note-${note.id}`}
         draggable={!isEditing}
         onDragStart={(e) => {
           setIsDragging(true);
