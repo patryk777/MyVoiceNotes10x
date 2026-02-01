@@ -1,15 +1,24 @@
-# AI Manifest - MyVoiceNotes10x
+<div align="center">
 
-> Dokumentacja procesu tworzenia projektu z wykorzystaniem AI
+# 🤖 AI Manifest - MyVoiceNotes10x
+
+### Dokumentacja procesu tworzenia projektu z wykorzystaniem AI
+
+[![Windsurf](https://img.shields.io/badge/Built%20with-Windsurf%20Cascade-6366f1?style=for-the-badge)](https://codeium.com/windsurf)
+[![AI Powered](https://img.shields.io/badge/AI%20Powered-GPT--4o%20%2B%20Whisper-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
+
+</div>
+
+---
 
 ## 🤖 Narzędzia AI
 
-| Narzędzie | Rola |
-|-----------|------|
-| **Windsurf Cascade** | Główny asystent programistyczny, pair programming |
-| **Gemini 3 Pro** | Wsparcie dla złożonych promptów |
-| **OpenAI GPT-4o** | Przetwarzanie notatek w aplikacji |
-| **OpenAI Whisper** | Transkrypcja audio |
+| Narzędzie | Rola | Zastosowanie |
+|-----------|------|-------------|
+| **Windsurf Cascade** | Główny asystent | Pair programming, code generation, review |
+| **Gemini 3 Pro** | Wsparcie | Złożone prompty, analiza |
+| **OpenAI GPT-4o** | Backend | Przetwarzanie notatek, kategoryzacja |
+| **OpenAI Whisper** | Backend | Transkrypcja audio (STT) |
 
 ## 📝 Główne prompty użyte w projekcie
 
@@ -102,6 +111,8 @@ Wygeneruj AI_MANIFEST.md z promptami.
 
 ## 📊 Statystyki projektu
 
+<div align="center">
+
 | Metryka | Wartość |
 |---------|---------|
 | **Commity** | 30+ |
@@ -112,6 +123,8 @@ Wygeneruj AI_MANIFEST.md z promptami.
 | **Komponenty** | 9 |
 | **Hooki** | 3 |
 | **API Routes** | 6 |
+
+</div>
 
 ### 10. Refaktor
 
@@ -175,26 +188,37 @@ main
 
 ## 🎯 Wnioski
 
-### Co działało dobrze:
+### ✅ Co działało dobrze
 
-1. **Iteracyjne budowanie** - jedna funkcja na raz
-2. **Natychmiastowe testowanie** - weryfikacja w przeglądarce
-3. **Konwencjonalne commity** - czytelna historia
-4. **Feature branches** - izolacja zmian
+| Praktyka | Efekt |
+|----------|-------|
+| **Iteracyjne budowanie** | Jedna funkcja na raz = mniej bugów |
+| **Natychmiastowe testowanie** | Szybka weryfikacja w przeglądarce |
+| **Konwencjonalne commity** | Czytelna historia zmian |
+| **Feature branches** | Izolacja zmian, łatwy rollback |
+| **`.windsurfrules`** | AI rozumie kontekst projektu |
 
-### Wyzwania:
+### ⚠️ Wyzwania
 
-1. **ESM modules w testach** - wymagały mocków (react-markdown)
-2. **MediaRecorder API** - mockowanie w testach
-3. **Streaming responses** - obsługa w React
+| Problem | Rozwiązanie |
+|---------|------------|
+| ESM modules w testach | Mocki dla react-markdown |
+| MediaRecorder API | Mockowanie w Jest |
+| Streaming responses | Vercel AI SDK |
+| Playwright selectors | Dopasowanie do rzeczywistego UI |
 
-### Rekomendacje:
+### 💡 Rekomendacje dla przyszłych projektów
 
-1. Definiuj jasne reguły w `.windsurfrules`
-2. Używaj checkpointów do zachowania kontekstu
-3. Testuj każdą funkcję przed przejściem dalej
-4. Commituj często z opisowymi wiadomościami
+1. **Definiuj reguły** - `.windsurfrules` z best practices
+2. **Używaj checkpointów** - zachowanie kontekstu między sesjami
+3. **Testuj wcześnie** - każda funkcja przed przejściem dalej
+4. **Commituj często** - conventional commits
+5. **Dokumentuj prompty** - AI_MANIFEST dla reprodukowalności
 
 ---
 
-*Wygenerowano przez Windsurf Cascade*
+<div align="center">
+
+**Wygenerowano przez [Windsurf Cascade](https://codeium.com/windsurf)** | Projekt kursu [10xDevs 2.0](https://10xdevs.pl)
+
+</div>
