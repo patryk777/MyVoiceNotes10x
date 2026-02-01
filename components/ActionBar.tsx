@@ -39,14 +39,14 @@ export function ActionBar({
     <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
       <button
         onClick={onOpenHelp}
-        className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300"
+        className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300 cursor-pointer"
         title="Pomoc"
       >
         <HelpCircle className="w-4 h-4" />
       </button>
       <button
         onClick={onOpenSettings}
-        className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300"
+        className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300 cursor-pointer"
         title={t("settings")}
       >
         <Settings className="w-4 h-4" />
@@ -61,7 +61,7 @@ export function ActionBar({
       </button>
       <button
         onClick={onToggleArchive}
-        className={`p-2 border rounded-lg ${
+        className={`p-2 border rounded-lg cursor-pointer ${
           showArchive
             ? "bg-yellow-600 border-yellow-500 text-white"
             : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"
@@ -83,7 +83,7 @@ export function ActionBar({
       <button
         onClick={onExportMarkdown}
         disabled={!hasNotes}
-        className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         title="Export do .md"
       >
         <Download className="w-4 h-4" />
@@ -92,7 +92,7 @@ export function ActionBar({
       <button
         onClick={onExportPdf}
         disabled={!hasNotes}
-        className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         title="Export do .pdf"
       >
         <FileDown className="w-4 h-4" />
@@ -101,7 +101,7 @@ export function ActionBar({
       <button
         onClick={onSummarize}
         disabled={!hasNotes || isSummarizing}
-        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-lg text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-lg text-sm text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         title="Podsumuj notatki"
       >
         {isSummarizing ? (

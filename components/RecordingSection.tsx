@@ -33,7 +33,7 @@ export function RecordingSection({
           status === "recording"
             ? "bg-red-600 animate-pulse"
             : "bg-red-600 hover:bg-red-500"
-        } ${isWorking ? "opacity-50 cursor-not-allowed" : ""}`}
+        } ${isWorking ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         aria-label={status === "recording" ? "Stop recording" : "Start recording"}
       >
         {isWorking ? (

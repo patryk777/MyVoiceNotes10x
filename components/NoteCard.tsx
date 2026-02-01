@@ -116,7 +116,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="p-1 text-zinc-500 hover:text-blue-400"
+                  className="p-1 text-zinc-500 hover:text-blue-400 cursor-pointer"
                   aria-label="Edit note"
                   title="Edytuj notatkę"
                 >
@@ -125,7 +125,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                 {note.versions && note.versions.length > 0 && (
                   <button
                     onClick={() => setShowHistory(true)}
-                    className="p-1 text-zinc-500 hover:text-blue-400"
+                    className="p-1 text-zinc-500 hover:text-blue-400 cursor-pointer"
                     aria-label="View history"
                     title="Historia wersji"
                   >
@@ -136,7 +136,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   onUnarchive && (
                     <button
                       onClick={() => onUnarchive(note.id)}
-                      className="p-1 text-zinc-500 hover:text-green-400"
+                      className="p-1 text-zinc-500 hover:text-green-400 cursor-pointer"
                       aria-label="Restore from archive"
                       title="Przywróć z archiwum"
                     >
@@ -147,7 +147,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   onArchive && (
                     <button
                       onClick={() => onArchive(note.id)}
-                      className="p-1 text-zinc-500 hover:text-yellow-400"
+                      className="p-1 text-zinc-500 hover:text-yellow-400 cursor-pointer"
                       aria-label="Archive note"
                       title="Archiwizuj notatkę"
                     >
@@ -157,7 +157,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                 )}
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="p-1 text-zinc-500 hover:text-red-500"
+                  className="p-1 text-zinc-500 hover:text-red-500 cursor-pointer"
                   aria-label="Delete note"
                   title="Usuń notatkę"
                 >
