@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Note, NoteCategory } from "@/hooks/useNotes";
+import { Note } from "@/hooks/useNotes";
 
 interface NoteCardProps {
   note: Note;
@@ -17,6 +17,14 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(note.title);
   const [editContent, setEditContent] = useState(note.content);
+  const [isTruncated, setIsTruncated] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setIsTruncated(contentRef.current.scrollHeight > contentRef.current.clientHeight);
+    }
+  }, [note.content]);
 
   const handleSave = () => {
     onUpdate(note.id, editTitle, editContent);
@@ -92,6 +100,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
           </div>
 
           <div
+            ref={contentRef}
             className={`mt-2 text-xs text-zinc-400 prose prose-invert prose-xs ${
               isExpanded ? "" : "line-clamp-3"
             }`}
@@ -103,16 +112,18 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
             <p className="text-xs text-zinc-600">
               {new Date(note.createdAt).toLocaleDateString()}
             </p>
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-zinc-500 hover:text-zinc-300 p-1"
-            >
-              {isExpanded ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
+            {(isTruncated || isExpanded) && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-zinc-500 hover:text-zinc-300 p-1"
+              >
+                {isExpanded ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+            )}
           </div>
         </>
       )}
