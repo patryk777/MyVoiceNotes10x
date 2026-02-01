@@ -101,9 +101,14 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
 
           <div
             ref={contentRef}
-            className={`mt-2 text-xs text-zinc-400 prose prose-invert prose-xs ${
-              isExpanded ? "" : "line-clamp-3"
-            }`}
+            className={`mt-2 text-xs text-zinc-300 prose prose-invert prose-xs 
+              prose-headings:text-zinc-200 prose-headings:font-semibold prose-headings:mt-2 prose-headings:mb-1
+              prose-p:my-1 prose-p:leading-relaxed
+              prose-strong:text-zinc-100 prose-strong:font-semibold
+              prose-ul:my-1 prose-ul:pl-4 prose-li:my-0.5
+              prose-ol:my-1 prose-ol:pl-4
+              prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+              ${isExpanded ? "" : "line-clamp-3"}`}
           >
             <ReactMarkdown>{note.content}</ReactMarkdown>
           </div>
