@@ -110,8 +110,57 @@ Goal: Ship a working MVP to Vercel.
 4. **I - Interface Segregation:** Many specific interfaces > one general interface.
 5. **D - Dependency Inversion:** Depend on abstractions (interfaces/types), not concretions.
 
+## PROJECT STRUCTURE
+
+```
+app/                    # Next.js App Router
+├── api/               # API routes (one per file)
+├── page.tsx           # Main orchestrator (<250 lines)
+└── layout.tsx         # Root layout
+
+components/            # React components (<200 lines each)
+├── modals/           # Modal components
+└── *.tsx             # Feature components
+
+hooks/                 # Custom React hooks
+├── useNotes.ts       # Notes CRUD + localStorage
+├── useRecorder.ts    # Audio recording
+└── useSettings.ts    # App settings + i18n
+
+lib/                   # Utilities and constants
+├── constants.ts      # Colors, categories
+├── export.ts         # Export logic (MD/PDF)
+└── types.ts          # Shared TypeScript types
+
+__tests__/            # Jest tests (mirror src structure)
+```
+
+## FILE NAMING
+
+- Components: `PascalCase.tsx` (e.g., `NoteCard.tsx`)
+- Hooks: `camelCase.ts` with `use` prefix (e.g., `useNotes.ts`)
+- Utils/Lib: `camelCase.ts` (e.g., `export.ts`)
+- Tests: `*.test.ts` or `*.test.tsx`
+- API Routes: `route.ts` in folder (e.g., `api/process/route.ts`)
+
+## DEBUGGING
+
+1. **Root Cause First:** Fix the source, not symptoms.
+2. **Add Logging:** Use `console.error` with context.
+3. **Isolate:** Create minimal reproduction.
+4. **Verify:** Run tests after fix.
+
+## FUTURE INTEGRATIONS
+
+When adding new AI features:
+- **LangGraph:** Use for multi-step workflows with memory
+- **RAG:** Implement with vector store for semantic search
+- **Agents:** Keep prompts in separate files for maintainability
+
 ## BEHAVIOR
 
 - Don't explain. Just code.
 - Fix bugs immediately.
 - If I ask for a feature, implement the simplest working version.
+- If I say "review", do a thorough code review and fix issues.
+- If I say "refactor", extract components/functions following best practices.
