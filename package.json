@@ -1,0 +1,37 @@
+{
+  "name": "myvoicenotes10x",
+  "version": "1.0.0",
+  "description": "This is a course project for 10xdevs 2.0. It focuses on voice notes to replace commercial solutions, providing audio recording, automated transcription, and intelligent content processing. The project will continue to be developed after the training.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patryk777/MyVoiceNotes10x.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/patryk777/MyVoiceNotes10x/issues"
+  },
+  "homepage": "https://github.com/patryk777/MyVoiceNotes10x#readme",
+  "dependencies": {
+    "@types/node": "^25.1.0",
+    "@types/react": "^19.2.10",
+    "autoprefixer": "^10.4.24",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.6",
+    "lucide-react": "^0.563.0",
+    "next": "^15.5.11",
+    "postcss": "^8.5.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-markdown": "^10.1.0",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
+  }
+}
