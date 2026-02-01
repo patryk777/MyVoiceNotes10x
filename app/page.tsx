@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2, Archive } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2, Archive, Settings } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
+import { useSettings } from "@/hooks/useSettings";
 import { NoteCard } from "@/components/NoteCard";
+import { SettingsModal } from "@/components/SettingsModal";
 
 const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; color: string }[] = [
   { id: "tasks", label: "Zadania", icon: <CheckSquare className="w-4 h-4" />, color: "border-t-orange-500" },
@@ -16,6 +18,7 @@ const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; colo
 
 export default function Home() {
   const { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo, archiveNote, unarchiveNote } = useNotes();
+  const { settings, updateSettings, t } = useSettings();
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
@@ -25,6 +28,7 @@ export default function Home() {
     { tasks: "date", ideas: "date", notes: "date", meetings: "date" }
   );
   const [showArchive, setShowArchive] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const processAudio = useCallback(async (blob: Blob) => {
     if (!blob || isProcessing) return;
@@ -70,7 +74,7 @@ export default function Home() {
   }, [isProcessing, saveNote]);
 
   const resetRecordingRef = useRef<(() => void) | null>(null);
-  const { status, startRecording, stopRecording, resetRecording } = useRecorder(processAudio);
+  const { status, recordingTime, startRecording, stopRecording, resetRecording } = useRecorder(processAudio, settings.maxRecordingSeconds);
   resetRecordingRef.current = resetRecording;
 
   const handleMicClick = () => {
@@ -271,6 +275,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Settings Modal */}
+      {showSettings && (
+        <SettingsModal
+          settings={settings}
+          onUpdate={updateSettings}
+          onClose={() => setShowSettings(false)}
+          t={t}
+        />
+      )}
+
       {/* Summary Modal */}
       {summary && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2 sm:p-4">
@@ -278,7 +292,7 @@ export default function Home() {
             <div className="flex items-center justify-between p-4 border-b border-zinc-700">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-purple-400" />
-                <h2 className="text-lg font-semibold">Podsumowanie AI</h2>
+                <h2 className="text-lg font-semibold">{t("summary")}</h2>
               </div>
               <button
                 onClick={() => setSummary(null)}
@@ -349,10 +363,12 @@ export default function Home() {
 
           <div className="flex flex-col">
             {status === "idle" && !isWorking && (
-              <p className="text-zinc-400 text-sm">Kliknij, aby nagrać</p>
+              <p className="text-zinc-400 text-sm">{t("clickToRecord")}</p>
             )}
             {status === "recording" && (
-              <p className="text-red-400 text-sm">Nagrywanie...</p>
+              <p className="text-red-400 text-sm">
+                {t("recording")} {Math.floor(recordingTime / 60)}:{(recordingTime % 60).toString().padStart(2, "0")} / {Math.floor(settings.maxRecordingSeconds / 60)}:{(settings.maxRecordingSeconds % 60).toString().padStart(2, "0")}
+              </p>
             )}
             {processingStatus && (
               <p className="text-blue-400 text-sm">{processingStatus}</p>
@@ -362,17 +378,24 @@ export default function Home() {
 
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
+            onClick={() => setShowSettings(true)}
+            className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300"
+            title={t("settings")}
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+          <button
             onClick={undo}
             disabled={!canUndo}
             className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Cofnij (Ctrl+Z)"
+            title={`${t("undo")} (Ctrl+Z)`}
           >
             <Undo2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => setShowArchive(!showArchive)}
             className={`p-2 border rounded-lg ${showArchive ? "bg-yellow-600 border-yellow-500 text-white" : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"}`}
-            title={showArchive ? "Pokaż aktywne" : "Pokaż archiwum"}
+            title={showArchive ? t("showActive") : t("showArchive")}
           >
             <Archive className="w-4 h-4" />
           </button>
@@ -380,7 +403,7 @@ export default function Home() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
               type="text"
-              placeholder="Szukaj..."
+              placeholder={t("search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-zinc-800 border border-zinc-700 rounded-lg pl-9 pr-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 w-full sm:w-48 lg:w-64"
@@ -434,7 +457,7 @@ export default function Home() {
               <div className={`p-3 border-t-4 ${cat.color} rounded-t-lg`}>
                 <div className="flex items-center gap-2 text-zinc-300">
                   {cat.icon}
-                  <span className="font-medium">{cat.label}</span>
+                  <span className="font-medium">{t(cat.id)}</span>
                   <button
                     onClick={() => toggleSort(cat.id)}
                     className="ml-auto p-1 text-zinc-500 hover:text-zinc-300"
@@ -464,7 +487,7 @@ export default function Home() {
                 ))}
                 {getFilteredNotesByCategory(cat.id).length === 0 && (
                   <p className="text-zinc-600 text-sm text-center py-4">
-                    {searchQuery ? "Brak wyników" : "Przeciągnij lub nagraj"}
+                    {searchQuery ? (settings.appLanguage === "pl" ? "Brak wyników" : "No results") : t("dragOrRecord")}
                   </p>
                 )}
               </div>
