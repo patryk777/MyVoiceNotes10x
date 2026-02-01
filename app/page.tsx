@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2, Archive, MicOff } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2, Archive } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
@@ -25,7 +25,6 @@ export default function Home() {
     { tasks: "date", ideas: "date", notes: "date", meetings: "date" }
   );
   const [showArchive, setShowArchive] = useState(false);
-  const [recordingEnabled, setRecordingEnabled] = useState(false);
 
   const processAudio = useCallback(async (blob: Blob) => {
     if (!blob || isProcessing) return;
@@ -75,7 +74,6 @@ export default function Home() {
   resetRecordingRef.current = resetRecording;
 
   const handleMicClick = () => {
-    if (!recordingEnabled) return;
     if (status === "idle") {
       startRecording();
     } else if (status === "recording") {
@@ -240,7 +238,7 @@ export default function Home() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "r" && !e.shiftKey) {
         e.preventDefault();
-        if (recordingEnabled && status === "idle" && !isProcessing) {
+        if (status === "idle" && !isProcessing) {
           startRecording();
         } else if (status === "recording") {
           stopRecording();
@@ -269,7 +267,7 @@ export default function Home() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [status, isProcessing, notes.length, isSummarizing, summary, startRecording, stopRecording, recordingEnabled]);
+  }, [status, isProcessing, notes.length, isSummarizing, summary, startRecording, stopRecording]);
 
   return (
     <div className="flex flex-col h-full">
@@ -331,26 +329,12 @@ export default function Home() {
       <section className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 border-b border-zinc-800">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setRecordingEnabled(!recordingEnabled)}
-            className={`p-2 rounded-lg border transition-all ${
-              recordingEnabled 
-                ? "bg-green-600 border-green-500 text-white" 
-                : "bg-zinc-800 border-zinc-700 text-zinc-400"
-            }`}
-            title={recordingEnabled ? "Wyłącz nagrywanie" : "Włącz nagrywanie"}
-          >
-            {recordingEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-          </button>
-
-          <button
             onClick={handleMicClick}
-            disabled={isWorking || !recordingEnabled}
+            disabled={isWorking}
             className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${
-              !recordingEnabled
-                ? "bg-zinc-700 cursor-not-allowed"
-                : status === "recording"
-                  ? "bg-red-600 animate-pulse"
-                  : "bg-red-600 hover:bg-red-500"
+              status === "recording"
+                ? "bg-red-600 animate-pulse"
+                : "bg-red-600 hover:bg-red-500"
             } ${isWorking ? "opacity-50 cursor-not-allowed" : ""}`}
             aria-label={status === "recording" ? "Stop recording" : "Start recording"}
           >
@@ -364,10 +348,7 @@ export default function Home() {
           </button>
 
           <div className="flex flex-col">
-            {!recordingEnabled && (
-              <p className="text-zinc-500 text-sm">Nagrywanie wyłączone</p>
-            )}
-            {recordingEnabled && status === "idle" && !isWorking && (
+            {status === "idle" && !isWorking && (
               <p className="text-zinc-400 text-sm">Kliknij, aby nagrać</p>
             )}
             {status === "recording" && (
