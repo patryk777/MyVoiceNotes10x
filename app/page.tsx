@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
 import { NoteCard } from "@/components/NoteCard";
@@ -18,6 +19,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
 
   const processAudio = useCallback(async (blob: Blob) => {
     if (!blob || isProcessing) return;
@@ -191,8 +194,82 @@ export default function Home() {
     e.preventDefault();
   };
 
+  const generateSummary = async () => {
+    const filteredNotes = getFilteredNotes();
+    if (filteredNotes.length === 0) return;
+
+    setIsSummarizing(true);
+    try {
+      const res = await fetch("/api/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: filteredNotes }),
+      });
+      const data = await res.json();
+      setSummary(data.summary);
+    } catch (err) {
+      console.error("Summary error:", err);
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
+      {/* Summary Modal */}
+      {summary && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-xl border border-zinc-700 max-w-2xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-700">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                <h2 className="text-lg font-semibold">Podsumowanie AI</h2>
+              </div>
+              <button
+                onClick={() => setSummary(null)}
+                className="p-1 text-zinc-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 prose prose-invert prose-sm max-w-none
+              prose-headings:text-zinc-200 prose-headings:font-semibold
+              prose-p:text-zinc-300 prose-p:leading-relaxed
+              prose-strong:text-zinc-100
+              prose-ul:text-zinc-300 prose-li:my-1
+              prose-ol:text-zinc-300">
+              <ReactMarkdown>{summary}</ReactMarkdown>
+            </div>
+            <div className="p-4 border-t border-zinc-700 flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  const now = new Date();
+                  const timestamp = now.toISOString().replace(/[:.]/g, "-").slice(0, 19);
+                  const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Podsumowanie AI</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;color:#1a1a1a}h1{color:#7c3aed;border-bottom:2px solid #7c3aed;padding-bottom:10px}h2{color:#2563eb;margin-top:20px}ul{padding-left:20px}li{margin:8px 0}@media print{body{padding:20px}}</style></head><body><h1>Podsumowanie AI - MyVoiceNotes</h1><p><em>${now.toLocaleString("pl-PL")}</em></p>${summary?.replace(/\n/g, "<br>").replace(/^## (.*)/gm, "<h2>$1</h2>").replace(/^- (.*)/gm, "<li>$1</li>")}</body></html>`;
+                  const printWindow = window.open("", "_blank");
+                  if (printWindow) {
+                    printWindow.document.write(htmlContent);
+                    printWindow.document.close();
+                    printWindow.document.title = `${timestamp}_Podsumowanie_AI`;
+                    setTimeout(() => printWindow.print(), 250);
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm"
+              >
+                <FileDown className="w-4 h-4" />
+                Export PDF
+              </button>
+              <button
+                onClick={() => setSummary(null)}
+                className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-sm"
+              >
+                Zamknij
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top: Recording section */}
       <section className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-b border-zinc-800">
         <div className="flex items-center gap-4">
@@ -256,6 +333,19 @@ export default function Home() {
           >
             <FileDown className="w-4 h-4" />
             <span className="hidden sm:inline">.pdf</span>
+          </button>
+          <button
+            onClick={generateSummary}
+            disabled={getFilteredNotes().length === 0 || isSummarizing}
+            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-lg text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            title={searchQuery ? "Podsumuj przefiltrowane notatki" : "Podsumuj wszystkie notatki"}
+          >
+            {isSummarizing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Sparkles className="w-4 h-4" />
+            )}
+            <span className="hidden sm:inline">Podsumuj</span>
           </button>
         </div>
       </section>
