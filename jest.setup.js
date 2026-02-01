@@ -1,18 +1,29 @@
 import '@testing-library/jest-dom';
-import React from 'react';
 
 // Fix for React 19 - globalThis.IS_REACT_ACT_ENVIRONMENT
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-// Polyfill React.act for @testing-library/react compatibility
-if (!React.act) {
-  React.act = (callback) => {
-    const result = callback();
-    if (result && typeof result.then === 'function') {
-      return result;
-    }
-    return Promise.resolve(result);
-  };
+// React 19 moved act from react-dom/test-utils to react
+// This polyfill ensures compatibility
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+if (typeof React.act === 'undefined') {
+  // For React 19, act should be available on React
+  // If not, we need to create a proper implementation
+  const { act: reactDomAct } = require('react-dom/test-utils');
+  if (reactDomAct) {
+    React.act = reactDomAct;
+  } else {
+    // Fallback implementation
+    React.act = (callback) => {
+      const result = callback();
+      if (result && typeof result.then === 'function') {
+        return result;
+      }
+      return Promise.resolve(result);
+    };
+  }
 }
 
 // Mock localStorage
