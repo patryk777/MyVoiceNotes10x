@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
@@ -15,7 +15,7 @@ const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; colo
 ];
 
 export default function Home() {
-  const { notes, saveNote, updateNoteCategory, updateNote, deleteNote } = useNotes();
+  const { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo } = useNotes();
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
@@ -257,6 +257,10 @@ export default function Home() {
       if (e.key === "Escape" && summary) {
         setSummary(null);
       }
+      if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+        e.preventDefault();
+        undo();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -355,6 +359,14 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <button
+            onClick={undo}
+            disabled={!canUndo}
+            className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Cofnij (Ctrl+Z)"
+          >
+            <Undo2 className="w-4 h-4" />
+          </button>
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
