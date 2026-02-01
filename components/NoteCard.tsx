@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash, Wand2, Loader2, Tags } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash, Wand2, Loader2, Tags, Languages } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Note, NoteColor, NoteCategory } from "@/hooks/useNotes";
 
@@ -42,6 +42,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const [isSuggestingCategory, setIsSuggestingCategory] = useState(false);
   const [suggestedCategory, setSuggestedCategory] = useState<NoteCategory | null>(null);
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,6 +123,25 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
       console.error("Tags suggestion error:", err);
     } finally {
       setIsSuggestingTags(false);
+    }
+  };
+
+  const translateNote = async (targetLanguage: string) => {
+    if (!editTitle && !editContent) return;
+    setIsTranslating(true);
+    try {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: editTitle, content: editContent, targetLanguage }),
+      });
+      const data = await res.json();
+      if (data.title) setEditTitle(data.title);
+      if (data.content) setEditContent(data.content);
+    } catch (err) {
+      console.error("Translation error:", err);
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -306,7 +326,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={suggestCategory}
               disabled={isSuggestingCategory || (!editTitle && !editContent)}
@@ -326,6 +346,23 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                 Przenieś do: {suggestedCategory === "tasks" ? "Zadania" : suggestedCategory === "ideas" ? "Pomysły" : suggestedCategory === "meetings" ? "Spotkania" : "Notatki"}
               </button>
             )}
+            <div className="flex items-center gap-1">
+              <Languages className="w-3 h-3 text-zinc-500" />
+              <select
+                onChange={(e) => e.target.value && translateNote(e.target.value)}
+                disabled={isTranslating || (!editTitle && !editContent)}
+                className="bg-zinc-900 border border-zinc-600 rounded px-1 py-0.5 text-xs text-zinc-300 disabled:opacity-50"
+                defaultValue=""
+              >
+                <option value="" disabled>Tłumacz...</option>
+                <option value="angielski">🇬🇧 Angielski</option>
+                <option value="niemiecki">🇩🇪 Niemiecki</option>
+                <option value="francuski">🇫🇷 Francuski</option>
+                <option value="hiszpański">🇪🇸 Hiszpański</option>
+                <option value="polski">🇵🇱 Polski</option>
+              </select>
+              {isTranslating && <Loader2 className="w-3 h-3 animate-spin text-blue-400" />}
+            </div>
           </div>
           <div className="flex justify-between text-xs text-zinc-500">
             <span>{editTitle.length} znaków w tytule</span>
