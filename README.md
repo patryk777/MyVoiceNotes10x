@@ -9,7 +9,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
 
-[![Tests](https://img.shields.io/badge/Tests-210%20passed-success?style=flat-square)](./package.json)
+[![Tests](https://img.shields.io/badge/Tests-236%20passed-success?style=flat-square)](./package.json)
 [![Coverage](https://img.shields.io/badge/Coverage-87%25-brightgreen?style=flat-square)](./package.json)
 [![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](./LICENSE)
 [![10xDevs](https://img.shields.io/badge/10xDevs-2.0-purple?style=flat-square)](https://10xdevs.pl)
@@ -125,9 +125,9 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 | Typ | Ilość | Pokrycie |
 |-----|-------|----------|
-| **Unit (Jest)** | 169 | 87% |
+| **Unit (Jest)** | 195 | 87% |
 | **E2E (Playwright)** | 41 | - |
-| **Łącznie** | **210** | - |
+| **Łącznie** | **236** | - |
 
 </div>
 
@@ -137,22 +137,23 @@ OPENAI_API_KEY=sk-your-api-key-here
 ```
 __tests__/
 ├── hooks/
-│   ├── useNotes.test.ts           (19 testów)
-│   ├── useSettings.test.ts        (8 testów)
+│   ├── useNotes.test.ts           (13 testów)
+│   ├── useSettings.test.ts        (10 testów)
 │   └── useRecorder.test.ts        (13 testów)
 ├── components/
 │   ├── ActionBar.test.tsx         (14 testów)
 │   ├── DeleteConfirmModal.test.tsx (7 testów)
 │   ├── HistoryModal.test.tsx      (8 testów)
 │   ├── KanbanBoard.test.tsx       (12 testów)
-│   ├── NoteCard.test.tsx          (16 testów)
-│   ├── NoteCard.extended.test.tsx (16 testów)
+│   ├── NoteCard.test.tsx          (3 testy)
+│   ├── NoteCard.extended.test.tsx (12 testów)
+│   ├── NoteEditForm.test.tsx      (16 testów)
 │   ├── RecordingSection.test.tsx  (10 testów)
 │   ├── SettingsModal.test.tsx     (4 testy)
-│   └── SummaryModal.test.tsx      (8 testów)
+│   └── SummaryModal.test.tsx      (9 testów)
 ├── lib/
-│   ├── constants.test.ts          (14 testów)
-│   └── export.test.ts             (11 testów)
+│   ├── constants.test.ts          (11 testów)
+│   └── export.test.ts             (17 testów)
 └── api/
     └── validation.test.ts         (16 testów)
 ```
@@ -305,18 +306,20 @@ MyVoiceNotes10x/
 │   │   ├── suggest-tags/     # AI tags
 │   │   └── translate/        # Translation
 │   ├── layout.tsx
-│   └── page.tsx              # Main orchestrator (230 linii)
+│   └── page.tsx              # Main orchestrator
 ├── components/
 │   ├── ActionBar.tsx         # Search, export, settings buttons
-│   ├── KanbanBoard.tsx       # Kanban columns with drag-drop
-│   ├── NoteCard.tsx          # Note card (220 linii)
-│   ├── NoteEditForm.tsx      # Edit form with AI features
 │   ├── RecordingSection.tsx  # Mic button and timer
-│   ├── SettingsModal.tsx     # App settings modal
-│   ├── SummaryModal.tsx      # AI summary modal
-│   └── modals/
-│       ├── DeleteConfirmModal.tsx
-│       └── HistoryModal.tsx
+│   ├── modals/               # Modal components
+│   │   ├── DeleteConfirmModal.tsx
+│   │   ├── HistoryModal.tsx
+│   │   ├── HelpModal.tsx
+│   │   ├── SettingsModal.tsx
+│   │   └── SummaryModal.tsx
+│   └── notes/                # Note-related components
+│       ├── KanbanBoard.tsx   # Kanban columns with drag-drop
+│       ├── NoteCard.tsx      # Note card with actions
+│       └── NoteEditForm.tsx  # Edit form with AI features
 ├── hooks/
 │   ├── useNotes.ts           # Notes CRUD + localStorage
 │   ├── useRecorder.ts        # Audio recording
@@ -325,10 +328,11 @@ MyVoiceNotes10x/
 │   ├── constants.ts          # Colors, categories
 │   ├── export.ts             # MD/PDF export logic
 │   └── types.ts              # API response types
-├── __tests__/                # 169 Jest tests (87% coverage)
+├── __tests__/                # 195 Jest tests (87% coverage)
+├── e2e/                      # 41 Playwright E2E tests
 ├── __mocks__/                # Test mocks
 ├── vercel.json               # Vercel config (waw1 region)
-└── .windsurfrules            # AI assistant rules (167 lines)
+└── .windsurfrules            # AI assistant rules
 ```
 
 ## 📄 Licencja
