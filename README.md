@@ -105,11 +105,22 @@ __tests__/
 
 > **Ten projekt został w całości zbudowany przy użyciu [Windsurf Cascade](https://codeium.com/windsurf)** - AI-powered IDE.
 
+### Dlaczego Windsurf?
+
+Windsurf Cascade jest **przemyślanie skonfigurowany** poprzez plik `.windsurfrules`, który definiuje:
+- Stack technologiczny i architekturę
+- Best practices (frontend, backend, SOLID)
+- Git Flow z automatycznymi commit messages
+- Konwencje nazewnictwa i struktury kodu
+
+Dzięki temu AI działa **niemal autonomicznie** - rozumie kontekst projektu, stosuje się do reguł i generuje spójny kod. To pozwala na **bardzo szybkie dostarczanie funkcjonalności**.
+
 ### Proces tworzenia:
 1. **Pair Programming z AI** - Cascade jako asystent programistyczny
 2. **Iteracyjne budowanie** - funkcja po funkcji z natychmiastowym testowaniem
 3. **Git Flow** - feature branches z automatycznymi commit messages
 4. **Testy generowane przez AI** - 70 testów jednostkowych
+5. **Code Review przez AI** - refaktor i optymalizacja
 
 ### Narzędzia AI użyte w projekcie:
 - **Windsurf Cascade** - główne IDE i asystent
@@ -118,6 +129,23 @@ __tests__/
 - **OpenAI Whisper** - transkrypcja audio
 
 Szczegóły promptów użytych w projekcie: [AI_MANIFEST.md](./AI_MANIFEST.md)
+
+## 🚧 Plany rozwoju
+
+> **Ta aplikacja ma realne przełożenie na moje codzienne życie** - używam jej do organizacji myśli i zadań.
+
+### Planowane funkcjonalności:
+- 🔗 **LangGraph** - zaawansowane workflow AI z pamięcią kontekstową
+- 🧠 **RAG** - wyszukiwanie semantyczne w notatkach
+- 📅 **Integracja z kalendarzem** - automatyczne tworzenie wydarzeń
+- 🔔 **Push notifications** - przypomnienia w czasie rzeczywistym
+- ☁️ **Sync w chmurze** - synchronizacja między urządzeniami
+
+### Filozofia rozwoju:
+Projekt jest celowo zbudowany na **prostym stacku** (Next.js + localStorage), co pozwala na:
+- Szybkie prototypowanie nowych funkcji
+- Łatwe dodawanie zaawansowanych integracji AI
+- Pełną kontrolę nad kodem bez vendor lock-in
 
 ## 📁 Struktura projektu
 
