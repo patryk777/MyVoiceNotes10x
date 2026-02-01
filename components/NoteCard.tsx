@@ -118,6 +118,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   onClick={() => setIsEditing(true)}
                   className="p-1 text-zinc-500 hover:text-blue-400"
                   aria-label="Edit note"
+                  title="Edytuj notatkę"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
@@ -126,6 +127,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                     onClick={() => setShowHistory(true)}
                     className="p-1 text-zinc-500 hover:text-blue-400"
                     aria-label="View history"
+                    title="Historia wersji"
                   >
                     <History className="w-3.5 h-3.5" />
                   </button>
@@ -136,6 +138,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                       onClick={() => onUnarchive(note.id)}
                       className="p-1 text-zinc-500 hover:text-green-400"
                       aria-label="Restore from archive"
+                      title="Przywróć z archiwum"
                     >
                       <ArchiveRestore className="w-3.5 h-3.5" />
                     </button>
@@ -146,6 +149,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                       onClick={() => onArchive(note.id)}
                       className="p-1 text-zinc-500 hover:text-yellow-400"
                       aria-label="Archive note"
+                      title="Archiwizuj notatkę"
                     >
                       <Archive className="w-3.5 h-3.5" />
                     </button>
@@ -155,6 +159,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   onClick={() => setShowDeleteConfirm(true)}
                   className="p-1 text-zinc-500 hover:text-red-500"
                   aria-label="Delete note"
+                  title="Usuń notatkę"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

@@ -9,6 +9,7 @@ import { RecordingSection } from "@/components/RecordingSection";
 import { ActionBar } from "@/components/ActionBar";
 import { SummaryModal } from "@/components/SummaryModal";
 import { KanbanBoard } from "@/components/KanbanBoard";
+import { HelpModal } from "@/components/HelpModal";
 import { exportToMarkdown, exportToPdf } from "@/lib/export";
 
 const CATEGORIES_FOR_EXPORT = [
@@ -34,6 +35,7 @@ export default function Home() {
   });
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   const processAudio = useCallback(
     async (blob: Blob) => {
@@ -234,6 +236,7 @@ export default function Home() {
           onExportPdf={handleExportPdf}
           onSummarize={generateSummary}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenHelp={() => setShowHelp(true)}
           isSummarizing={isSummarizing}
           hasNotes={getFilteredNotes().length > 0}
           t={t}
@@ -255,6 +258,8 @@ export default function Home() {
         onCategoryChange={updateNoteCategory}
         t={t}
       />
+
+      <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Download, FileDown, Sparkles, Loader2, Undo2, Archive, Settings } from "lucide-react";
+import { Search, Download, FileDown, Sparkles, Loader2, Undo2, Archive, Settings, HelpCircle } from "lucide-react";
 
 interface ActionBarProps {
   searchQuery: string;
@@ -13,6 +13,7 @@ interface ActionBarProps {
   onExportPdf: () => void;
   onSummarize: () => void;
   onOpenSettings: () => void;
+  onOpenHelp: () => void;
   isSummarizing: boolean;
   hasNotes: boolean;
   t: (key: string) => string;
@@ -29,12 +30,20 @@ export function ActionBar({
   onExportPdf,
   onSummarize,
   onOpenSettings,
+  onOpenHelp,
   isSummarizing,
   hasNotes,
   t,
 }: ActionBarProps) {
   return (
     <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+      <button
+        onClick={onOpenHelp}
+        className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300"
+        title="Pomoc"
+      >
+        <HelpCircle className="w-4 h-4" />
+      </button>
       <button
         onClick={onOpenSettings}
         className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300"

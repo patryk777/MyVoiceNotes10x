@@ -5,6 +5,21 @@ interface CategoryInfo {
   label: string;
 }
 
+function parseMarkdownToHtml(text: string): string {
+  let html = text
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/^- (.*)/gm, "<li>$1</li>")
+    .replace(/\n/g, "<br>");
+  
+  if (html.includes("<li>")) {
+    html = html.replace(/(<li>.*?<\/li>(<br>)?)+/g, (match) => 
+      `<ul>${match.replace(/<br>/g, "")}</ul>`
+    );
+  }
+  return html;
+}
+
 export function exportToMarkdown(
   notes: Note[],
   categories: CategoryInfo[],
@@ -63,7 +78,7 @@ export function exportToPdf(
       const notesContent = catNotes
         .map(
           (n) =>
-            `<div class="note"><h3>${n.title}</h3><div class="note-date">${new Date(n.createdAt).toLocaleString()}</div><div class="note-content">${n.content.replace(/\n/g, "<br>")}</div></div>`
+            `<div class="note"><h3>${n.title}</h3><div class="note-date">${new Date(n.createdAt).toLocaleString()}</div><div class="note-content">${parseMarkdownToHtml(n.content)}</div></div>`
         )
         .join("");
       return `<h2>${cat.label}</h2>${notesContent}`;
