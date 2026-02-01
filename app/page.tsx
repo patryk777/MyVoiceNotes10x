@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Mic, Square, Loader2, Trash2, CheckSquare, Lightbulb, FileText, Calendar } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download } from "lucide-react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
+import { NoteCard } from "@/components/NoteCard";
 
 const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; color: string }[] = [
   { id: "tasks", label: "Zadania", icon: <CheckSquare className="w-4 h-4" />, color: "border-t-orange-500" },
@@ -14,7 +14,8 @@ const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; colo
 ];
 
 export default function Home() {
-  const { notes, saveNote, updateNoteCategory, deleteNote } = useNotes();
+  const { notes, saveNote, updateNoteCategory, updateNote, deleteNote } = useNotes();
+  const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
 
@@ -75,8 +76,63 @@ export default function Home() {
 
   const isWorking = isProcessing;
 
-  const getNotesByCategory = (category: NoteCategory): Note[] => {
-    return notes.filter((n) => n.category === category);
+  const getFilteredNotesByCategory = (category: NoteCategory): Note[] => {
+    return notes.filter((n) => {
+      if (n.category !== category) return false;
+      if (!searchQuery) return true;
+      const query = searchQuery.toLowerCase();
+      return (
+        n.title.toLowerCase().includes(query) ||
+        n.content.toLowerCase().includes(query)
+      );
+    });
+  };
+
+  const getFilteredNotes = (): Note[] => {
+    if (!searchQuery) return notes;
+    const query = searchQuery.toLowerCase();
+    return notes.filter(
+      (n) =>
+        n.title.toLowerCase().includes(query) ||
+        n.content.toLowerCase().includes(query)
+    );
+  };
+
+  const exportToMarkdown = () => {
+    const filteredNotes = getFilteredNotes();
+    if (filteredNotes.length === 0) return;
+
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    
+    const markdown = CATEGORIES.map((cat) => {
+      const catNotes = filteredNotes
+        .filter((n) => n.category === cat.id)
+        .sort((a, b) => b.createdAt - a.createdAt);
+      if (catNotes.length === 0) return "";
+      return `## ${cat.label}\n\n${catNotes
+        .map((n) => {
+          const noteDate = new Date(n.createdAt).toLocaleString("pl-PL");
+          return `### ${n.title}\n\n*${noteDate}*\n\n${n.content}\n\n---`;
+        })
+        .join("\n\n")}`;
+    })
+      .filter(Boolean)
+      .join("\n\n");
+
+    const header = searchQuery 
+      ? `# MyVoiceNotes Export\n\n**Filtr:** "${searchQuery}"\n**Eksport:** ${now.toLocaleString("pl-PL")}\n**Liczba notatek:** ${filteredNotes.length}\n\n`
+      : `# MyVoiceNotes Export\n\n**Eksport:** ${now.toLocaleString("pl-PL")}\n**Liczba notatek:** ${filteredNotes.length}\n\n`;
+
+    const blob = new Blob([header + markdown], {
+      type: "text/markdown",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${timestamp}_MyVoiceNotes${searchQuery ? `_${searchQuery.replace(/\s+/g, "-")}` : ""}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleDragStart = (e: React.DragEvent, noteId: string) => {
@@ -98,42 +154,65 @@ export default function Home() {
   return (
     <div className="flex flex-col h-full">
       {/* Top: Recording section */}
-      <section className="flex items-center justify-center gap-6 p-6 border-b border-zinc-800">
-        <button
-          onClick={handleMicClick}
-          disabled={isWorking}
-          className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
-            status === "recording"
-              ? "bg-red-600 animate-pulse"
-              : "bg-red-600 hover:bg-red-500"
-          } ${isWorking ? "opacity-50 cursor-not-allowed" : ""}`}
-          aria-label={status === "recording" ? "Stop recording" : "Start recording"}
-        >
-          {isWorking ? (
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
-          ) : status === "recording" ? (
-            <Square className="w-6 h-6 text-white" />
-          ) : (
-            <Mic className="w-8 h-8 text-white" />
-          )}
-        </button>
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-b border-zinc-800">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleMicClick}
+            disabled={isWorking}
+            className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${
+              status === "recording"
+                ? "bg-red-600 animate-pulse"
+                : "bg-red-600 hover:bg-red-500"
+            } ${isWorking ? "opacity-50 cursor-not-allowed" : ""}`}
+            aria-label={status === "recording" ? "Stop recording" : "Start recording"}
+          >
+            {isWorking ? (
+              <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-white animate-spin" />
+            ) : status === "recording" ? (
+              <Square className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            ) : (
+              <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            )}
+          </button>
 
-        <div className="flex flex-col gap-2">
-          {status === "idle" && !isWorking && (
-            <p className="text-zinc-400">Kliknij, aby nagrać notatkę głosową</p>
-          )}
-          {status === "recording" && (
-            <p className="text-red-400">Nagrywanie... Kliknij, aby zatrzymać</p>
-          )}
-          {processingStatus && (
-            <p className="text-blue-400 text-sm">{processingStatus}</p>
-          )}
+          <div className="flex flex-col">
+            {status === "idle" && !isWorking && (
+              <p className="text-zinc-400 text-sm">Kliknij, aby nagrać</p>
+            )}
+            {status === "recording" && (
+              <p className="text-red-400 text-sm">Nagrywanie...</p>
+            )}
+            {processingStatus && (
+              <p className="text-blue-400 text-sm">{processingStatus}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-none">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <input
+              type="text"
+              placeholder="Szukaj..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-zinc-800 border border-zinc-700 rounded-lg pl-9 pr-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 w-full sm:w-48 lg:w-64"
+            />
+          </div>
+          <button
+            onClick={exportToMarkdown}
+            disabled={getFilteredNotes().length === 0}
+            className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-4 h-4" />
+            <span className="hidden sm:inline">Export</span>
+          </button>
         </div>
       </section>
 
       {/* Kanban board */}
-      <section className="flex-1 overflow-hidden p-4">
-        <div className="grid grid-cols-4 gap-4 h-full">
+      <section className="flex-1 overflow-x-auto p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 h-full min-w-0">
           {CATEGORIES.map((cat) => (
             <div
               key={cat.id}
@@ -147,43 +226,25 @@ export default function Home() {
                   {cat.icon}
                   <span className="font-medium">{cat.label}</span>
                   <span className="ml-auto text-zinc-500 text-sm">
-                    {getNotesByCategory(cat.id).length}
+                    {getFilteredNotesByCategory(cat.id).length}
                   </span>
                 </div>
               </div>
 
               {/* Cards */}
-              <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-220px)]">
-                {getNotesByCategory(cat.id).map((note) => (
-                  <div
+              <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-280px)]">
+                {getFilteredNotesByCategory(cat.id).map((note) => (
+                  <NoteCard
                     key={note.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, note.id)}
-                    className="bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-colors group"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-medium text-sm text-zinc-200 line-clamp-2">
-                        {note.title}
-                      </h3>
-                      <button
-                        onClick={() => deleteNote(note.id)}
-                        className="p-1 text-zinc-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                        aria-label="Delete note"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <div className="mt-2 text-xs text-zinc-400 line-clamp-3 prose prose-invert prose-xs">
-                      <ReactMarkdown>{note.content}</ReactMarkdown>
-                    </div>
-                    <p className="text-xs text-zinc-600 mt-2">
-                      {new Date(note.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
+                    note={note}
+                    onDelete={deleteNote}
+                    onUpdate={updateNote}
+                    onDragStart={handleDragStart}
+                  />
                 ))}
-                {getNotesByCategory(cat.id).length === 0 && (
+                {getFilteredNotesByCategory(cat.id).length === 0 && (
                   <p className="text-zinc-600 text-sm text-center py-4">
-                    Przeciągnij lub nagraj
+                    {searchQuery ? "Brak wyników" : "Przeciągnij lub nagraj"}
                   </p>
                 )}
               </div>
