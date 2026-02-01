@@ -11,6 +11,7 @@ export interface Note {
   content: string;
   category: NoteCategory;
   createdAt: number;
+  tags?: string[];
 }
 
 const STORAGE_KEY = "voice-to-structure-notes";
@@ -60,10 +61,10 @@ export function useNotes() {
     });
   }, [pushHistory]);
 
-  const updateNote = useCallback((id: string, title: string, content: string) => {
+  const updateNote = useCallback((id: string, title: string, content: string, tags?: string[]) => {
     setNotes((prev) => {
       pushHistory(prev);
-      const updated = prev.map((n) => (n.id === id ? { ...n, title, content } : n));
+      const updated = prev.map((n) => (n.id === id ? { ...n, title, content, tags: tags ?? n.tags } : n));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });

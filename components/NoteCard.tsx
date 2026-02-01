@@ -8,7 +8,7 @@ import { Note } from "@/hooks/useNotes";
 interface NoteCardProps {
   note: Note;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, title: string, content: string) => void;
+  onUpdate: (id: string, title: string, content: string, tags?: string[]) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
 }
 
@@ -20,6 +20,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   const [isTruncated, setIsTruncated] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [editTags, setEditTags] = useState(note.tags?.join(", ") || "");
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,13 +30,15 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   }, [note.content]);
 
   const handleSave = () => {
-    onUpdate(note.id, editTitle, editContent);
+    const tags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
+    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setEditTitle(note.title);
     setEditContent(note.content);
+    setEditTags(note.tags?.join(", ") || "");
     setIsEditing(false);
   };
 
@@ -94,6 +97,13 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
             onChange={(e) => setEditContent(e.target.value)}
             rows={6}
             className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-300 focus:outline-none focus:border-blue-500 resize-none"
+          />
+          <input
+            type="text"
+            value={editTags}
+            onChange={(e) => setEditTags(e.target.value)}
+            placeholder="Tagi (oddzielone przecinkami)"
+            className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
           />
           <div className="flex justify-between text-xs text-zinc-500">
             <span>{editTitle.length} znaków w tytule</span>
@@ -154,6 +164,19 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
           >
             <ReactMarkdown>{note.content}</ReactMarkdown>
           </div>
+
+          {note.tags && note.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {note.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-1.5 py-0.5 bg-zinc-700 text-zinc-300 text-[10px] rounded"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs text-zinc-600">
