@@ -219,10 +219,25 @@ Wszystkie endpointy mają limity chroniące przed nadmiernym zużyciem tokenów:
 **Windsurf IDE** to nie tylko edytor kodu - to pełnoprawny partner w programowaniu. Kluczowe zalety:
 
 **🔧 Konfiguracja IDE:**
-- **MCP Servers** - podłączone narzędzia: Git, Filesystem, Playwright, Puppeteer, Memory, Perplexity, Exa, DeepWiki
+- **MCP Servers** - 9 podłączonych narzędzi (szczegóły poniżej)
 - **Memories** - AI pamięta kontekst między sesjami
 - **Checkpoints** - automatyczne zapisywanie stanu pracy
 - **Multi-file editing** - edycja wielu plików jednocześnie
+
+**🔌 MCP Servers użyte w projekcie:**
+
+| Server | Zastosowanie |
+|--------|--------------|
+| **deepwiki** | Dokumentacja GitHub repos, pytania o biblioteki |
+| **exa** | Web search, code context, company research |
+| **fetch** | Pobieranie treści z URL |
+| **filesystem** | Operacje na plikach i katalogach |
+| **git** | Zarządzanie repozytorium (commit, branch, diff) |
+| **mcp-playwright** | Automatyzacja przeglądarki, E2E testy |
+| **memory** | Knowledge graph, persystencja kontekstu |
+| **perplexity-ask** | AI-powered wyszukiwanie i odpowiedzi |
+| **puppeteer** | Screenshoty, nawigacja, interakcje z DOM |
+| **sequential-thinking** | Rozwiązywanie złożonych problemów krok po kroku |
 
 **📋 Plik `.windsurfrules` (167 linii):**
 - Stack technologiczny i architektura
