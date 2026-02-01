@@ -147,4 +147,96 @@ describe("useNotes", () => {
     expect(result.current.notes[0].versions![0].title).toBe("Original");
     expect(result.current.notes[0].versions![0].content).toBe("Original Content");
   });
+
+  it("should clear all tags when updating with empty array", () => {
+    const { result } = renderHook(() => useNotes());
+
+    act(() => {
+      result.current.saveNote("transcript", "Test", "Content", "tasks");
+    });
+
+    const noteId = result.current.notes[0].id;
+
+    // First add some tags
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", ["tag1", "tag2"]);
+    });
+
+    expect(result.current.notes[0].tags).toEqual(["tag1", "tag2"]);
+
+    // Now clear all tags with empty array
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", []);
+    });
+
+    expect(result.current.notes[0].tags).toEqual([]);
+  });
+
+  it("should clear all images when updating with empty array", () => {
+    const { result } = renderHook(() => useNotes());
+
+    act(() => {
+      result.current.saveNote("transcript", "Test", "Content", "tasks");
+    });
+
+    const noteId = result.current.notes[0].id;
+
+    // First add some images
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", undefined, undefined, undefined, ["img1", "img2"]);
+    });
+
+    expect(result.current.notes[0].images).toEqual(["img1", "img2"]);
+
+    // Now clear all images with empty array
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", undefined, undefined, undefined, []);
+    });
+
+    expect(result.current.notes[0].images).toEqual([]);
+  });
+
+  it("should preserve tags when updating with undefined", () => {
+    const { result } = renderHook(() => useNotes());
+
+    act(() => {
+      result.current.saveNote("transcript", "Test", "Content", "tasks");
+    });
+
+    const noteId = result.current.notes[0].id;
+
+    // Add tags
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", ["tag1", "tag2"]);
+    });
+
+    // Update without specifying tags (undefined)
+    act(() => {
+      result.current.updateNote(noteId, "Updated Title", "Updated Content");
+    });
+
+    // Tags should be preserved
+    expect(result.current.notes[0].tags).toEqual(["tag1", "tag2"]);
+  });
+
+  it("should allow removing single tag from multiple", () => {
+    const { result } = renderHook(() => useNotes());
+
+    act(() => {
+      result.current.saveNote("transcript", "Test", "Content", "tasks");
+    });
+
+    const noteId = result.current.notes[0].id;
+
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", ["tag1", "tag2", "tag3"]);
+    });
+
+    // Remove middle tag
+    act(() => {
+      result.current.updateNote(noteId, "Test", "Content", ["tag1", "tag3"]);
+    });
+
+    expect(result.current.notes[0].tags).toEqual(["tag1", "tag3"]);
+  });
 });
