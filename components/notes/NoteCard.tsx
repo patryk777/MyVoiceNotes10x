@@ -118,7 +118,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   onClick={() => setIsEditing(true)}
                   className="p-1 text-zinc-500 hover:text-blue-400 cursor-pointer"
                   aria-label="Edit note"
-                  title="Edytuj notatkę"
+                  title="✏️ Edytuj notatkę - zmień tytuł, treść, tagi, kolor lub przypomnienie"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
@@ -127,7 +127,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                     onClick={() => setShowHistory(true)}
                     className="p-1 text-zinc-500 hover:text-blue-400 cursor-pointer"
                     aria-label="View history"
-                    title="Historia wersji"
+                    title="📜 Historia wersji - przywróć poprzednią wersję notatki"
                   >
                     <History className="w-3.5 h-3.5" />
                   </button>
@@ -138,7 +138,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                       onClick={() => onUnarchive(note.id)}
                       className="p-1 text-zinc-500 hover:text-green-400 cursor-pointer"
                       aria-label="Restore from archive"
-                      title="Przywróć z archiwum"
+                      title="📥 Przywróć z archiwum - przenieś notatkę z powrotem do aktywnych"
                     >
                       <ArchiveRestore className="w-3.5 h-3.5" />
                     </button>
@@ -149,7 +149,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                       onClick={() => onArchive(note.id)}
                       className="p-1 text-zinc-500 hover:text-yellow-400 cursor-pointer"
                       aria-label="Archive note"
-                      title="Archiwizuj notatkę"
+                      title="📦 Archiwizuj - ukryj notatkę bez usuwania, możesz ją później przywrócić"
                     >
                       <Archive className="w-3.5 h-3.5" />
                     </button>
@@ -159,7 +159,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
                   onClick={() => setShowDeleteConfirm(true)}
                   className="p-1 text-zinc-500 hover:text-red-500 cursor-pointer"
                   aria-label="Delete note"
-                  title="Usuń notatkę"
+                  title="🗑️ Usuń notatkę - trwale usuń (wymaga potwierdzenia)"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

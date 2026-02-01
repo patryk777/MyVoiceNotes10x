@@ -35,6 +35,7 @@ export function RecordingSection({
             : "bg-red-600 hover:bg-red-500"
         } ${isWorking ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         aria-label={status === "recording" ? "Stop recording" : "Start recording"}
+        title={status === "recording" ? "⏹️ Zatrzymaj nagrywanie - kliknij aby zakończyć i przetworzyć" : "🎤 Nagraj notatkę - kliknij i mów, AI automatycznie przetworzy"}
       >
         {isWorking ? (
           <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-white animate-spin" />
