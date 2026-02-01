@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Note, NoteColor } from "@/hooks/useNotes";
 
@@ -19,7 +19,7 @@ const NOTE_COLORS: { id: NoteColor; bg: string; border: string }[] = [
 interface NoteCardProps {
   note: Note;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, title: string, content: string, tags?: string[], color?: NoteColor) => void;
+  onUpdate: (id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
 }
 
@@ -33,6 +33,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   const [isDragging, setIsDragging] = useState(false);
   const [editTags, setEditTags] = useState(note.tags?.join(", ") || "");
   const [editColor, setEditColor] = useState<NoteColor>(note.color || "default");
+  const [editReminder, setEditReminder] = useState(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,7 +44,8 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
 
   const handleSave = () => {
     const tags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
-    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined, editColor);
+    const reminder = editReminder ? new Date(editReminder).getTime() : null;
+    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined, editColor, reminder);
     setIsEditing(false);
   };
 
@@ -52,6 +54,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
     setEditContent(note.content);
     setEditTags(note.tags?.join(", ") || "");
     setEditColor(note.color || "default");
+    setEditReminder(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
     setIsEditing(false);
   };
 
@@ -130,6 +133,20 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
               />
             ))}
           </div>
+          <div className="flex items-center gap-2">
+            <Bell className="w-3.5 h-3.5 text-zinc-500" />
+            <input
+              type="datetime-local"
+              value={editReminder}
+              onChange={(e) => setEditReminder(e.target.value)}
+              className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
+            />
+            {editReminder && (
+              <button onClick={() => setEditReminder("")} className="text-zinc-500 hover:text-red-400">
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
           <div className="flex justify-between text-xs text-zinc-500">
             <span>{editTitle.length} znaków w tytule</span>
             <span>{editContent.length} znaków w treści</span>
@@ -200,6 +217,13 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
                   #{tag}
                 </span>
               ))}
+            </div>
+          )}
+
+          {note.reminder && (
+            <div className={`flex items-center gap-1 mt-2 text-[10px] ${note.reminder < Date.now() ? "text-red-400" : "text-yellow-400"}`}>
+              <Bell className="w-3 h-3" />
+              <span>{new Date(note.reminder).toLocaleString("pl-PL")}</span>
             </div>
           )}
 
