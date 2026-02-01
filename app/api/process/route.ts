@@ -8,12 +8,18 @@ const NoteSchema = z.object({
   content: z.string().describe("Well-structured markdown content with bullet points, headers if needed. Fix grammar, remove filler words."),
 });
 
+const MAX_PROMPT_LENGTH = 10000; // ~2500 tokens
+
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
     if (!prompt || typeof prompt !== "string") {
       return Response.json({ error: "Missing or invalid prompt" }, { status: 400 });
+    }
+
+    if (prompt.length > MAX_PROMPT_LENGTH) {
+      return Response.json({ error: `Prompt too long (max ${MAX_PROMPT_LENGTH} chars)` }, { status: 400 });
     }
 
     const { object } = await generateObject({

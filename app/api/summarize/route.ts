@@ -7,6 +7,9 @@ interface NoteInput {
   content: string;
 }
 
+const MAX_NOTES = 50;
+const MAX_CONTENT_LENGTH = 50000; // ~12500 tokens
+
 export async function POST(req: Request) {
   try {
     const { notes } = await req.json();
@@ -15,9 +18,17 @@ export async function POST(req: Request) {
       return Response.json({ error: "Missing or invalid notes array" }, { status: 400 });
     }
 
+    if (notes.length > MAX_NOTES) {
+      return Response.json({ error: `Too many notes (max ${MAX_NOTES})` }, { status: 400 });
+    }
+
     const notesText = notes
       .map((n: NoteInput) => `[${n.category}] ${n.title}: ${n.content}`)
       .join("\n\n");
+
+    if (notesText.length > MAX_CONTENT_LENGTH) {
+      return Response.json({ error: `Content too long (max ${MAX_CONTENT_LENGTH} chars)` }, { status: 400 });
+    }
 
     const { text } = await generateText({
       model: openai("gpt-4o"),

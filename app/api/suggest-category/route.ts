@@ -3,9 +3,19 @@ import OpenAI from "openai";
 
 const openai = new OpenAI();
 
+const MAX_INPUT_LENGTH = 5000;
+
 export async function POST(req: Request) {
   try {
     const { title, content } = await req.json();
+
+    if (!title || !content) {
+      return NextResponse.json({ category: "notes" });
+    }
+
+    if ((title + content).length > MAX_INPUT_LENGTH) {
+      return NextResponse.json({ error: "Input too long" }, { status: 400 });
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",

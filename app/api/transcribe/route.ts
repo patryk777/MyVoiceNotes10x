@@ -3,6 +3,8 @@ import OpenAI from "openai";
 
 const openai = new OpenAI();
 
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB (Whisper limit)
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -10,6 +12,10 @@ export async function POST(req: NextRequest) {
 
     if (!audioFile) {
       return NextResponse.json({ error: "No audio file provided" }, { status: 400 });
+    }
+
+    if (audioFile.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: "File too large (max 25MB)" }, { status: 400 });
     }
 
     const transcription = await openai.audio.transcriptions.create({

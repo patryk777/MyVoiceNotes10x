@@ -3,9 +3,24 @@ import OpenAI from "openai";
 
 const openai = new OpenAI();
 
+const MAX_INPUT_LENGTH = 10000;
+const VALID_LANGUAGES = ["polski", "angielski", "niemiecki", "francuski", "hiszpański"];
+
 export async function POST(req: Request) {
   try {
     const { title, content, targetLanguage } = await req.json();
+
+    if (!title || !content || !targetLanguage) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    if (!VALID_LANGUAGES.includes(targetLanguage)) {
+      return NextResponse.json({ error: "Invalid target language" }, { status: 400 });
+    }
+
+    if ((title + content).length > MAX_INPUT_LENGTH) {
+      return NextResponse.json({ error: "Input too long" }, { status: 400 });
+    }
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
