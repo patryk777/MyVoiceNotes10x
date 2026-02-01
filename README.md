@@ -38,7 +38,7 @@
 | 🌍 **Wielojęzyczność** | Interfejs PL/EN, tłumaczenie notatek |
 | 📱 **Mobile First** | Responsywny design |
 | 💡 **Tooltips** | Rozbudowane opisy przycisków z emoji |
-| 🖼️ **Obrazki** | Dodawanie zdjęć do notatek |
+| 🖼️ **Obrazki** | Dodawanie zdjęć z automatyczną kompresją do 450KB |
 
 ## 🛠️ Stack technologiczny
 

@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Check, X, Bell, ImagePlus, Wand2, Loader2, Tags, Languages } from "lucide-react";
 import { NoteColor, NoteCategory } from "@/hooks/useNotes";
-import { NOTE_COLORS, TRANSLATION_LANGUAGES, MAX_IMAGE_SIZE } from "@/lib/constants";
+import { NOTE_COLORS, TRANSLATION_LANGUAGES } from "@/lib/constants";
 
 interface NoteEditFormProps {
   initialTitle: string;
@@ -52,22 +52,72 @@ export function NoteEditForm({
     onSave(editTitle, editContent, tags, editColor, reminder, editImages);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File, maxSizeKB: number = 450): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let { width, height } = img;
+          
+          // Start with original size
+          let quality = 0.9;
+          let result = "";
+          
+          const compress = () => {
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+              reject(new Error("Canvas context not available"));
+              return;
+            }
+            ctx.drawImage(img, 0, 0, width, height);
+            result = canvas.toDataURL("image/jpeg", quality);
+            
+            // Check size (base64 is ~33% larger than binary)
+            const sizeKB = (result.length * 0.75) / 1024;
+            
+            if (sizeKB <= maxSizeKB || quality <= 0.1) {
+              resolve(result);
+            } else {
+              // Reduce quality or size
+              if (quality > 0.3) {
+                quality -= 0.1;
+              } else {
+                // Reduce dimensions
+                width = Math.floor(width * 0.8);
+                height = Math.floor(height * 0.8);
+                quality = 0.7;
+              }
+              compress();
+            }
+          };
+          
+          compress();
+        };
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.src = event.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    Array.from(files).forEach((file) => {
-      if (file.size > MAX_IMAGE_SIZE) {
-        alert("Plik jest za duży (max 500KB)");
-        return;
+    for (const file of Array.from(files)) {
+      try {
+        const compressed = await compressImage(file, 450);
+        setEditImages((prev) => [...prev, compressed]);
+      } catch (err) {
+        console.error("Image compression error:", err);
+        alert("Nie udało się przetworzyć obrazka");
       }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setEditImages((prev) => [...prev, base64]);
-      };
-      reader.readAsDataURL(file);
-    });
+    }
     e.target.value = "";
   };
 

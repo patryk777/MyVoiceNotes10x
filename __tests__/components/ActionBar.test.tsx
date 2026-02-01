@@ -38,44 +38,44 @@ describe("ActionBar", () => {
   it("renders all buttons", () => {
     render(<ActionBar {...defaultProps} />);
     
-    expect(screen.getByTitle("Ustawienia")).toBeInTheDocument();
-    expect(screen.getByTitle("Cofnij (Ctrl+Z)")).toBeInTheDocument();
-    expect(screen.getByTitle("Pokaż archiwum")).toBeInTheDocument();
+    expect(screen.getByTitle(/Ustawienia/)).toBeInTheDocument();
+    expect(screen.getByTitle(/Cofnij/)).toBeInTheDocument();
+    expect(screen.getByTitle(/archiwum/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Szukaj...")).toBeInTheDocument();
   });
 
   it("calls onOpenSettings when settings button clicked", () => {
     render(<ActionBar {...defaultProps} />);
     
-    fireEvent.click(screen.getByTitle("Ustawienia"));
+    fireEvent.click(screen.getByTitle(/Ustawienia/));
     expect(defaultProps.onOpenSettings).toHaveBeenCalledTimes(1);
   });
 
   it("calls onUndo when undo button clicked", () => {
     render(<ActionBar {...defaultProps} canUndo={true} />);
     
-    fireEvent.click(screen.getByTitle("Cofnij (Ctrl+Z)"));
+    fireEvent.click(screen.getByTitle(/Cofnij/));
     expect(defaultProps.onUndo).toHaveBeenCalledTimes(1);
   });
 
   it("disables undo button when canUndo is false", () => {
     render(<ActionBar {...defaultProps} canUndo={false} />);
     
-    const undoButton = screen.getByTitle("Cofnij (Ctrl+Z)");
+    const undoButton = screen.getByTitle(/Cofnij/);
     expect(undoButton).toBeDisabled();
   });
 
   it("calls onToggleArchive when archive button clicked", () => {
     render(<ActionBar {...defaultProps} />);
     
-    fireEvent.click(screen.getByTitle("Pokaż archiwum"));
+    fireEvent.click(screen.getByTitle(/archiwum/i));
     expect(defaultProps.onToggleArchive).toHaveBeenCalledTimes(1);
   });
 
   it("shows different title when showArchive is true", () => {
     render(<ActionBar {...defaultProps} showArchive={true} />);
     
-    expect(screen.getByTitle("Pokaż aktywne")).toBeInTheDocument();
+    expect(screen.getByTitle(/aktywnych/i)).toBeInTheDocument();
   });
 
   it("calls onSearchChange when typing in search", () => {
@@ -89,40 +89,40 @@ describe("ActionBar", () => {
   it("calls onExportMarkdown when export MD button clicked", () => {
     render(<ActionBar {...defaultProps} />);
     
-    fireEvent.click(screen.getByTitle("Export do .md"));
+    fireEvent.click(screen.getByTitle(/Export Markdown/i));
     expect(defaultProps.onExportMarkdown).toHaveBeenCalledTimes(1);
   });
 
   it("calls onExportPdf when export PDF button clicked", () => {
     render(<ActionBar {...defaultProps} />);
     
-    fireEvent.click(screen.getByTitle("Export do .pdf"));
+    fireEvent.click(screen.getByTitle(/Export PDF/i));
     expect(defaultProps.onExportPdf).toHaveBeenCalledTimes(1);
   });
 
   it("disables export buttons when hasNotes is false", () => {
     render(<ActionBar {...defaultProps} hasNotes={false} />);
     
-    expect(screen.getByTitle("Export do .md")).toBeDisabled();
-    expect(screen.getByTitle("Export do .pdf")).toBeDisabled();
+    expect(screen.getByTitle(/Export Markdown/i)).toBeDisabled();
+    expect(screen.getByTitle(/Export PDF/i)).toBeDisabled();
   });
 
   it("calls onSummarize when summarize button clicked", () => {
     render(<ActionBar {...defaultProps} />);
     
-    fireEvent.click(screen.getByTitle("Podsumuj notatki"));
+    fireEvent.click(screen.getByTitle(/Podsumuj AI/i));
     expect(defaultProps.onSummarize).toHaveBeenCalledTimes(1);
   });
 
   it("disables summarize button when isSummarizing is true", () => {
     render(<ActionBar {...defaultProps} isSummarizing={true} />);
     
-    expect(screen.getByTitle("Podsumuj notatki")).toBeDisabled();
+    expect(screen.getByTitle(/Podsumuj AI/i)).toBeDisabled();
   });
 
   it("disables summarize button when hasNotes is false", () => {
     render(<ActionBar {...defaultProps} hasNotes={false} />);
     
-    expect(screen.getByTitle("Podsumuj notatki")).toBeDisabled();
+    expect(screen.getByTitle(/Podsumuj AI/i)).toBeDisabled();
   });
 });
