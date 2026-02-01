@@ -107,13 +107,29 @@ __tests__/
 
 ### Dlaczego Windsurf?
 
-Windsurf Cascade jest **przemyślanie skonfigurowany** poprzez plik `.windsurfrules`, który definiuje:
-- Stack technologiczny i architekturę
+**Windsurf IDE** to nie tylko edytor kodu - to pełnoprawny partner w programowaniu. Kluczowe zalety:
+
+**🔧 Konfiguracja IDE:**
+- **MCP Servers** - podłączone narzędzia: Git, Filesystem, Playwright, Puppeteer, Memory, Perplexity, Exa, DeepWiki
+- **Memories** - AI pamięta kontekst między sesjami
+- **Checkpoints** - automatyczne zapisywanie stanu pracy
+- **Multi-file editing** - edycja wielu plików jednocześnie
+
+**📋 Plik `.windsurfrules` (167 linii):**
+- Stack technologiczny i architektura
 - Best practices (frontend, backend, SOLID)
 - Git Flow z automatycznymi commit messages
 - Konwencje nazewnictwa i struktury kodu
+- Wskazówki debugowania
+- Przygotowanie na przyszłe integracje (LangGraph, RAG)
 
-Dzięki temu AI działa **niemal autonomicznie** - rozumie kontekst projektu, stosuje się do reguł i generuje spójny kod. To pozwala na **bardzo szybkie dostarczanie funkcjonalności**.
+**🚀 Efekt:**
+Dzięki tej konfiguracji AI działa **niemal autonomicznie** - rozumie kontekst projektu, stosuje się do reguł i generuje spójny kod. Wystarczy powiedzieć:
+- `"Commit"` → automatyczny git add + conventional commit
+- `"review"` → pełny code review z poprawkami
+- `"refactor"` → wydzielenie komponentów zgodnie z best practices
+
+To pozwala na **bardzo szybkie dostarczanie funkcjonalności** bez ciągłego tłumaczenia kontekstu.
 
 ### Proces tworzenia:
 1. **Pair Programming z AI** - Cascade jako asystent programistyczny
