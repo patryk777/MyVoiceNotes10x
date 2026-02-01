@@ -9,15 +9,24 @@ const NoteSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
+  try {
+    const { prompt } = await req.json();
 
-  const { object } = await generateObject({
-    model: openai("gpt-4o"),
-    schema: NoteSchema,
-    prompt: `Transform this voice transcript into a structured note. Determine the best category based on content.
+    if (!prompt || typeof prompt !== "string") {
+      return Response.json({ error: "Missing or invalid prompt" }, { status: 400 });
+    }
+
+    const { object } = await generateObject({
+      model: openai("gpt-4o"),
+      schema: NoteSchema,
+      prompt: `Transform this voice transcript into a structured note. Determine the best category based on content.
 
 Transcript: ${prompt}`,
-  });
+    });
 
-  return Response.json(object);
+    return Response.json(object);
+  } catch (error) {
+    console.error("Process error:", error);
+    return Response.json({ error: "Failed to process transcript" }, { status: 500 });
+  }
 }
