@@ -42,6 +42,66 @@ Goal: Ship a working MVP to Vercel.
 - Branch naming: `feat/`, `fix/`, `test/`, `refactor/` prefixes.
 - Always merge feature branches to `main` after completion.
 
+## FRONTEND BEST PRACTICES
+
+1. **Component Structure:**
+   - Max 200 lines per component. Extract subcomponents if larger.
+   - One component per file. Name file same as component.
+   - Extract reusable logic to custom hooks (`use*.ts`).
+   - Extract constants to `lib/constants.ts`.
+
+2. **State Management:**
+   - Prefer `useState` for local state, custom hooks for shared state.
+   - Avoid prop drilling >2 levels - use context or composition.
+   - Memoize expensive computations with `useMemo`.
+   - Memoize callbacks with `useCallback` when passing to children.
+
+3. **TypeScript:**
+   - Define interfaces for props, API responses, and data models.
+   - Export types from hooks for reuse.
+   - Use `type` for unions, `interface` for objects.
+
+4. **Styling:**
+   - Use Tailwind utility classes, avoid inline styles.
+   - Extract repeated class combinations to variables.
+   - Use `cn()` helper for conditional classes.
+
+5. **Accessibility:**
+   - Add `aria-label` to icon-only buttons.
+   - Ensure keyboard navigation works.
+   - Use semantic HTML elements.
+
+## BACKEND BEST PRACTICES
+
+1. **API Routes:**
+   - One route handler per file in `app/api/.../route.ts`.
+   - Always validate request body before processing.
+   - Return consistent JSON structure: `{ data, error }`.
+   - Use proper HTTP status codes (200, 400, 401, 500).
+
+2. **Error Handling:**
+   - Wrap async operations in try/catch.
+   - Log errors with context (endpoint, input).
+   - Return user-friendly error messages, hide internal details.
+
+3. **Security:**
+   - Never expose API keys in client code.
+   - Validate and sanitize all user inputs.
+   - Use environment variables for secrets.
+
+4. **Performance:**
+   - Stream large responses (LLM, files).
+   - Set appropriate cache headers.
+   - Limit request payload sizes.
+
+## CODE QUALITY
+
+1. **DRY:** Extract repeated code to functions/components.
+2. **Single Responsibility:** Each function/component does one thing.
+3. **Naming:** Use descriptive names. Verbs for functions, nouns for variables.
+4. **Comments:** Only for "why", not "what". Code should be self-documenting.
+5. **Testing:** Write tests for hooks and components. Mock external APIs.
+
 ## BEHAVIOR
 
 - Don't explain. Just code.
