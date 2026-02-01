@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
@@ -231,6 +231,37 @@ export default function Home() {
       setIsSummarizing(false);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "r" && !e.shiftKey) {
+        e.preventDefault();
+        if (status === "idle" && !isProcessing) {
+          startRecording();
+        } else if (status === "recording") {
+          stopRecording();
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "e") {
+        e.preventDefault();
+        if (notes.length > 0) {
+          exportToMarkdown();
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "S") {
+        e.preventDefault();
+        if (notes.length > 0 && !isSummarizing) {
+          generateSummary();
+        }
+      }
+      if (e.key === "Escape" && summary) {
+        setSummary(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [status, isProcessing, notes.length, isSummarizing, summary, startRecording, stopRecording]);
 
   return (
     <div className="flex flex-col h-full">
