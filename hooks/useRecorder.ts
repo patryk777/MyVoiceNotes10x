@@ -1,14 +1,19 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 export type RecorderStatus = "idle" | "recording" | "stopped";
 
-export function useRecorder() {
+export function useRecorder(onRecordingComplete?: (blob: Blob) => void) {
   const [status, setStatus] = useState<RecorderStatus>("idle");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const onCompleteRef = useRef(onRecordingComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onRecordingComplete;
+  }, [onRecordingComplete]);
 
   const startRecording = useCallback(async () => {
     try {
@@ -26,7 +31,11 @@ export function useRecorder() {
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         setAudioBlob(blob);
+        setStatus("stopped");
         stream.getTracks().forEach((track) => track.stop());
+        if (onCompleteRef.current) {
+          onCompleteRef.current(blob);
+        }
       };
 
       mediaRecorder.start();
@@ -39,7 +48,6 @@ export function useRecorder() {
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && status === "recording") {
       mediaRecorderRef.current.stop();
-      setStatus("stopped");
     }
   }, [status]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Mic, Square, Loader2, Trash2, CheckSquare, Lightbulb, FileText, Calendar } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
@@ -14,28 +14,19 @@ const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; colo
 ];
 
 export default function Home() {
-  const { status, audioBlob, startRecording, stopRecording, resetRecording } = useRecorder();
   const { notes, saveNote, updateNoteCategory, deleteNote } = useNotes();
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
 
-  const handleMicClick = async () => {
-    if (status === "idle") {
-      startRecording();
-    } else if (status === "recording") {
-      stopRecording();
-    }
-  };
-
-  const processAudio = async () => {
-    if (!audioBlob) return;
+  const processAudio = useCallback(async (blob: Blob) => {
+    if (!blob || isProcessing) return;
 
     setIsProcessing(true);
     setProcessingStatus("Transkrybuję...");
 
     try {
       const formData = new FormData();
-      formData.append("audio", audioBlob, "recording.webm");
+      formData.append("audio", blob, "recording.webm");
 
       const transcribeRes = await fetch("/api/transcribe", {
         method: "POST",
@@ -60,13 +51,25 @@ export default function Home() {
 
       if (data.title && data.content && data.category) {
         saveNote(transcript, data.title, data.content, data.category);
-        resetRecording();
       }
     } catch (err) {
       console.error("Processing error:", err);
     } finally {
       setIsProcessing(false);
       setProcessingStatus("");
+      resetRecordingRef.current?.();
+    }
+  }, [isProcessing, saveNote]);
+
+  const resetRecordingRef = useRef<(() => void) | null>(null);
+  const { status, startRecording, stopRecording, resetRecording } = useRecorder(processAudio);
+  resetRecordingRef.current = resetRecording;
+
+  const handleMicClick = () => {
+    if (status === "idle") {
+      startRecording();
+    } else if (status === "recording") {
+      stopRecording();
     }
   };
 
@@ -102,8 +105,6 @@ export default function Home() {
           className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
             status === "recording"
               ? "bg-red-600 animate-pulse"
-              : status === "stopped"
-              ? "bg-green-600 hover:bg-green-500"
               : "bg-red-600 hover:bg-red-500"
           } ${isWorking ? "opacity-50 cursor-not-allowed" : ""}`}
           aria-label={status === "recording" ? "Stop recording" : "Start recording"}
@@ -124,22 +125,6 @@ export default function Home() {
           {status === "recording" && (
             <p className="text-red-400">Nagrywanie... Kliknij, aby zatrzymać</p>
           )}
-          {status === "stopped" && audioBlob && !isWorking && (
-            <div className="flex gap-3">
-              <button
-                onClick={processAudio}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm"
-              >
-                Przetwórz
-              </button>
-              <button
-                onClick={resetRecording}
-                className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium text-sm"
-              >
-                Anuluj
-              </button>
-            </div>
-          )}
           {processingStatus && (
             <p className="text-blue-400 text-sm">{processingStatus}</p>
           )}
@@ -147,12 +132,12 @@ export default function Home() {
       </section>
 
       {/* Kanban board */}
-      <section className="flex-1 overflow-x-auto p-4">
-        <div className="flex gap-4 h-full min-w-max">
+      <section className="flex-1 overflow-hidden p-4">
+        <div className="grid grid-cols-4 gap-4 h-full">
           {CATEGORIES.map((cat) => (
             <div
               key={cat.id}
-              className="w-80 flex-shrink-0 flex flex-col bg-zinc-900/50 rounded-lg"
+              className="flex flex-col bg-zinc-900/50 rounded-lg"
               onDrop={(e) => handleDrop(e, cat.id)}
               onDragOver={handleDragOver}
             >
