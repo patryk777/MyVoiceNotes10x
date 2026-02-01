@@ -157,20 +157,40 @@ Szczegóły promptów użytych w projekcie: [AI_MANIFEST.md](./AI_MANIFEST.md)
 
 ## 🚧 Plany rozwoju
 
-> **Ta aplikacja ma realne przełożenie na moje codzienne życie** - używam jej do organizacji myśli i zadań.
+> **Ta aplikacja ma realne przełożenie na moje codzienne życie** - używam jej do organizacji myśli i zadań. Docelowo ma być **Life Managerem** - centralnym hubem do zarządzania wszystkimi aspektami życia.
 
-### Planowane funkcjonalności:
-- 🔗 **LangGraph** - zaawansowane workflow AI z pamięcią kontekstową
-- 🧠 **RAG** - wyszukiwanie semantyczne w notatkach
-- 📅 **Integracja z kalendarzem** - automatyczne tworzenie wydarzeń
-- 🔔 **Push notifications** - przypomnienia w czasie rzeczywistym
+### Faza 1: Infrastruktura (Q1 2026)
+- 🗄️ **Baza danych** - migracja z localStorage na PostgreSQL/Supabase
+- 🔐 **Autentykacja** - logowanie przez OAuth (Google, GitHub)
 - ☁️ **Sync w chmurze** - synchronizacja między urządzeniami
+- 📱 **PWA** - instalowalna aplikacja mobilna
+
+### Faza 2: Zaawansowane AI (Q2 2026)
+- 🔗 **LangGraph** - multi-step workflow z pamięcią kontekstową
+- 🧠 **RAG** - wyszukiwanie semantyczne w notatkach (embeddings + vector store)
+- 🤖 **AI Agents** - automatyczne akcje na podstawie notatek
+- 📊 **Analiza wzorców** - insights z historii notatek
+
+### Faza 3: Life Manager (Q3-Q4 2026)
+- 📅 **Integracja z kalendarzem** - Google Calendar, Outlook
+- ✅ **Task Management** - Kanban z deadline'ami i priorytetami
+- 💰 **Budżet** - śledzenie wydatków z głosu
+- 🏃 **Habits** - tracking nawyków
+- 🎯 **Goals** - cele długoterminowe z postępem
+- 🔔 **Smart Notifications** - AI-driven przypomnienia
+
+### Faza 4: Integracje (2027)
+- 📧 **Email** - przetwarzanie maili na notatki/zadania
+- 💬 **Slack/Teams** - integracja z komunikatorami
+- 📝 **Notion/Obsidian** - eksport/import
+- 🏠 **Smart Home** - sterowanie głosem przez notatki
 
 ### Filozofia rozwoju:
 Projekt jest celowo zbudowany na **prostym stacku** (Next.js + localStorage), co pozwala na:
 - Szybkie prototypowanie nowych funkcji
 - Łatwe dodawanie zaawansowanych integracji AI
 - Pełną kontrolę nad kodem bez vendor lock-in
+- Stopniową migrację do bardziej złożonej architektury
 
 ## 📁 Struktura projektu
 
