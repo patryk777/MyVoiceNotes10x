@@ -5,7 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-190%20passed-green)](./package.json)
+[![Tests](https://img.shields.io/badge/Tests-210%20passed-green)](./package.json)
 
 ## 📋 Cel projektu
 
@@ -87,7 +87,7 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 ## 🧪 Testy
 
-Projekt zawiera **190 testów** (169 unit + 21 E2E):
+Projekt zawiera **210 testów** (169 unit + 41 E2E):
 
 ### Unit testy (Jest)
 

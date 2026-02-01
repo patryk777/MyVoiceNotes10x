@@ -105,7 +105,7 @@ Wygeneruj AI_MANIFEST.md z promptami.
 | Metryka | Wartość |
 |---------|---------|
 | **Commity** | 30+ |
-| **Testy** | 190 (169 unit + 21 E2E) |
+| **Testy** | 210 (169 unit + 41 E2E) |
 | **Pokrycie testami** | 87% |
 | **Pliki** | 50+ |
 | **Linie kodu** | ~4000 |
