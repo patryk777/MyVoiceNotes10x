@@ -9,7 +9,8 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
 
-[![Tests](https://img.shields.io/badge/Tests-236%20passed-success?style=flat-square)](./package.json)
+[![Tests](https://img.shields.io/badge/Tests-195%20passed-success?style=flat-square)](./package.json)
+[![CI](https://github.com/patryk777/MyVoiceNotes10x/actions/workflows/test.yml/badge.svg)](https://github.com/patryk777/MyVoiceNotes10x/actions/workflows/test.yml)
 [![Coverage](https://img.shields.io/badge/Coverage-87%25-brightgreen?style=flat-square)](./package.json)
 [![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](./LICENSE)
 [![10xDevs](https://img.shields.io/badge/10xDevs-2.0-purple?style=flat-square)](https://10xdevs.pl)
@@ -130,6 +131,8 @@ OPENAI_API_KEY=sk-your-api-key-here
 | **Unit (Jest)** | 195 | 87% |
 | **E2E (Playwright)** | 41 | - |
 | **Łącznie** | **236** | - |
+
+**CI/CD:** GitHub Actions uruchamia testy przy każdym push/PR do `main`
 
 </div>
 
@@ -348,7 +351,8 @@ MyVoiceNotes10x/
 ├── __tests__/                # 195 Jest tests (87% coverage)
 ├── e2e/                      # 41 Playwright E2E tests
 ├── __mocks__/                # Test mocks
-├── vercel.json               # Vercel config (waw1 region)
+├── vercel.json               # Vercel config (fra1 region)
+├── .github/workflows/        # GitHub Actions CI
 └── .windsurfrules            # AI assistant rules
 ```
 

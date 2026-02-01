@@ -186,8 +186,8 @@ Wygeneruj AI_MANIFEST.md z promptami.
 
 | Metryka | Wartość |
 |---------|---------|
-| **Commity** | 30+ |
-| **Testy** | 210 (169 unit + 41 E2E) |
+| **Commity** | 40+ |
+| **Testy** | 236 (195 unit + 41 E2E) |
 | **Pokrycie testami** | 87% |
 | **Pliki** | 50+ |
 | **Linie kodu** | ~4000 |
@@ -293,6 +293,7 @@ main
 | **Obrazki z kompresją** | Automatyczna kompresja do 450KB |
 | **Image preview modal** | Fullscreen podgląd zamiast window.open |
 | **Język notatek AI** | Ustawienie PL/EN dla generowanych notatek |
+| **GitHub Actions CI** | Automatyczne testy przy push/PR |
 
 ### ⚠️ Wyzwania
 
