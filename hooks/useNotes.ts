@@ -6,6 +6,12 @@ export type NoteCategory = "tasks" | "ideas" | "notes" | "meetings";
 
 export type NoteColor = "default" | "red" | "orange" | "yellow" | "green" | "blue" | "purple" | "pink";
 
+export interface NoteVersion {
+  title: string;
+  content: string;
+  timestamp: number;
+}
+
 export interface Note {
   id: string;
   transcript: string;
@@ -17,6 +23,7 @@ export interface Note {
   color?: NoteColor;
   reminder?: number;
   archived?: boolean;
+  versions?: NoteVersion[];
 }
 
 const STORAGE_KEY = "voice-to-structure-notes";
@@ -69,14 +76,20 @@ export function useNotes() {
   const updateNote = useCallback((id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null) => {
     setNotes((prev) => {
       pushHistory(prev);
-      const updated = prev.map((n) => (n.id === id ? { 
-        ...n, 
-        title, 
-        content, 
-        tags: tags ?? n.tags, 
-        color: color ?? n.color,
-        reminder: reminder === null ? undefined : (reminder ?? n.reminder)
-      } : n));
+      const updated = prev.map((n) => {
+        if (n.id !== id) return n;
+        const hasContentChanged = n.title !== title || n.content !== content;
+        const newVersion: NoteVersion | null = hasContentChanged ? { title: n.title, content: n.content, timestamp: Date.now() } : null;
+        return { 
+          ...n, 
+          title, 
+          content, 
+          tags: tags ?? n.tags, 
+          color: color ?? n.color,
+          reminder: reminder === null ? undefined : (reminder ?? n.reminder),
+          versions: newVersion ? [...(n.versions || []).slice(-9), newVersion] : n.versions
+        };
+      });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Note, NoteColor } from "@/hooks/useNotes";
 
@@ -32,6 +32,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const [editContent, setEditContent] = useState(note.content);
   const [isTruncated, setIsTruncated] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [editTags, setEditTags] = useState(note.tags?.join(", ") || "");
   const [editColor, setEditColor] = useState<NoteColor>(note.color || "default");
@@ -88,6 +89,47 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
               >
                 Usuń
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History Modal */}
+      {showHistory && note.versions && note.versions.length > 0 && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-lg border border-zinc-700 p-4 max-w-lg w-full max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <History className="w-5 h-5 text-blue-400" />
+                <h3 className="text-lg font-semibold">Historia zmian</h3>
+              </div>
+              <button onClick={() => setShowHistory(false)} className="p-1 text-zinc-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto space-y-3">
+              {[...note.versions].reverse().map((version, idx) => (
+                <div key={idx} className="bg-zinc-800 rounded p-3 border border-zinc-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-sm">{version.title}</span>
+                    <span className="text-xs text-zinc-500">
+                      {new Date(version.timestamp).toLocaleString("pl-PL")}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400 line-clamp-3">{version.content}</p>
+                  <button
+                    onClick={() => {
+                      setEditTitle(version.title);
+                      setEditContent(version.content);
+                      setShowHistory(false);
+                      setIsEditing(true);
+                    }}
+                    className="mt-2 text-xs text-blue-400 hover:text-blue-300"
+                  >
+                    Przywróć tę wersję
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -185,6 +227,15 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
+              {note.versions && note.versions.length > 0 && (
+                <button
+                  onClick={() => setShowHistory(true)}
+                  className="p-1 text-zinc-500 hover:text-blue-400"
+                  aria-label="View history"
+                >
+                  <History className="w-3.5 h-3.5" />
+                </button>
+              )}
               {note.archived ? (
                 onUnarchive && (
                   <button
