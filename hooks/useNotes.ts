@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 
 export type NoteCategory = "tasks" | "ideas" | "notes" | "meetings";
 
+export type NoteColor = "default" | "red" | "orange" | "yellow" | "green" | "blue" | "purple" | "pink";
+
 export interface Note {
   id: string;
   transcript: string;
@@ -12,6 +14,7 @@ export interface Note {
   category: NoteCategory;
   createdAt: number;
   tags?: string[];
+  color?: NoteColor;
 }
 
 const STORAGE_KEY = "voice-to-structure-notes";
@@ -61,10 +64,10 @@ export function useNotes() {
     });
   }, [pushHistory]);
 
-  const updateNote = useCallback((id: string, title: string, content: string, tags?: string[]) => {
+  const updateNote = useCallback((id: string, title: string, content: string, tags?: string[], color?: NoteColor) => {
     setNotes((prev) => {
       pushHistory(prev);
-      const updated = prev.map((n) => (n.id === id ? { ...n, title, content, tags: tags ?? n.tags } : n));
+      const updated = prev.map((n) => (n.id === id ? { ...n, title, content, tags: tags ?? n.tags, color: color ?? n.color } : n));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });

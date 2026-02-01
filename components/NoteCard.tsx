@@ -3,12 +3,23 @@
 import { useState, useRef, useEffect } from "react";
 import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { Note } from "@/hooks/useNotes";
+import { Note, NoteColor } from "@/hooks/useNotes";
+
+const NOTE_COLORS: { id: NoteColor; bg: string; border: string }[] = [
+  { id: "default", bg: "bg-zinc-800", border: "border-zinc-700" },
+  { id: "red", bg: "bg-red-900/50", border: "border-red-700" },
+  { id: "orange", bg: "bg-orange-900/50", border: "border-orange-700" },
+  { id: "yellow", bg: "bg-yellow-900/50", border: "border-yellow-700" },
+  { id: "green", bg: "bg-green-900/50", border: "border-green-700" },
+  { id: "blue", bg: "bg-blue-900/50", border: "border-blue-700" },
+  { id: "purple", bg: "bg-purple-900/50", border: "border-purple-700" },
+  { id: "pink", bg: "bg-pink-900/50", border: "border-pink-700" },
+];
 
 interface NoteCardProps {
   note: Note;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, title: string, content: string, tags?: string[]) => void;
+  onUpdate: (id: string, title: string, content: string, tags?: string[], color?: NoteColor) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
 }
 
@@ -21,6 +32,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [editTags, setEditTags] = useState(note.tags?.join(", ") || "");
+  const [editColor, setEditColor] = useState<NoteColor>(note.color || "default");
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,7 +43,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
 
   const handleSave = () => {
     const tags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
-    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined);
+    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined, editColor);
     setIsEditing(false);
   };
 
@@ -39,8 +51,11 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
     setEditTitle(note.title);
     setEditContent(note.content);
     setEditTags(note.tags?.join(", ") || "");
+    setEditColor(note.color || "default");
     setIsEditing(false);
   };
+
+  const colorStyle = NOTE_COLORS.find((c) => c.id === (note.color || "default")) || NOTE_COLORS[0];
 
   return (
     <>
@@ -80,7 +95,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
           onDragStart(e, note.id);
         }}
         onDragEnd={() => setIsDragging(false)}
-        className={`bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-all duration-200 group ${
+        className={`${colorStyle.bg} rounded-lg p-3 border ${colorStyle.border} cursor-grab active:cursor-grabbing hover:brightness-110 transition-all duration-200 group ${
           isDragging ? "opacity-50 scale-95 rotate-2 shadow-xl" : ""
         }`}
       >
@@ -105,6 +120,16 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
             placeholder="Tagi (oddzielone przecinkami)"
             className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
           />
+          <div className="flex gap-1">
+            {NOTE_COLORS.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setEditColor(c.id)}
+                className={`w-5 h-5 rounded ${c.bg} ${c.border} border ${editColor === c.id ? "ring-2 ring-white" : ""}`}
+                title={c.id}
+              />
+            ))}
+          </div>
           <div className="flex justify-between text-xs text-zinc-500">
             <span>{editTitle.length} znaków w tytule</span>
             <span>{editContent.length} znaków w treści</span>
