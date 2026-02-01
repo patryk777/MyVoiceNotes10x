@@ -50,23 +50,28 @@ Goal: Ship a working MVP to Vercel.
    - Extract reusable logic to custom hooks (`use*.ts`).
    - Extract constants to `lib/constants.ts`.
 
-2. **State Management:**
+2. **Folder Organization:**
+   - Max 7 files per folder. Create subdirectories if exceeded.
+   - Group by feature: `modals/`, `notes/`, `ui/`, etc.
+   - Keep related components together.
+
+3. **State Management:**
    - Prefer `useState` for local state, custom hooks for shared state.
    - Avoid prop drilling >2 levels - use context or composition.
    - Memoize expensive computations with `useMemo`.
    - Memoize callbacks with `useCallback` when passing to children.
 
-3. **TypeScript:**
+4. **TypeScript:**
    - Define interfaces for props, API responses, and data models.
    - Export types from hooks for reuse.
    - Use `type` for unions, `interface` for objects.
 
-4. **Styling:**
+5. **Styling:**
    - Use Tailwind utility classes, avoid inline styles.
    - Extract repeated class combinations to variables.
    - Use `cn()` helper for conditional classes.
 
-5. **Accessibility:**
+6. **Accessibility:**
    - Add `aria-label` to icon-only buttons.
    - Ensure keyboard navigation works.
    - Use semantic HTML elements.
