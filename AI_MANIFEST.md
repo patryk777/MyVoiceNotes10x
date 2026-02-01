@@ -292,6 +292,7 @@ main
 | **Rozbudowane tooltips** | UX z opisami funkcji |
 | **Obrazki z kompresją** | Automatyczna kompresja do 450KB |
 | **Image preview modal** | Fullscreen podgląd zamiast window.open |
+| **Język notatek AI** | Ustawienie PL/EN dla generowanych notatek |
 
 ### ⚠️ Wyzwania
 

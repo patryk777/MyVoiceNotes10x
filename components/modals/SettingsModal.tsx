@@ -71,6 +71,29 @@ export function SettingsModal({ settings, onUpdate, onClose, t }: SettingsModalP
             </div>
           </div>
 
+          {/* AI Response Language */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">
+              {t("aiResponseLanguageLabel")}
+            </label>
+            <div className="flex gap-2">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.id}
+                  onClick={() => onUpdate({ aiResponseLanguage: lang.id })}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                    settings.aiResponseLanguage === lang.id
+                      ? "bg-purple-600 border-purple-500 text-white"
+                      : "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-600"
+                  }`}
+                >
+                  <span>{lang.flag}</span>
+                  <span>{lang.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Default Translation Language */}
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-2">

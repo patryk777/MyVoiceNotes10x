@@ -64,7 +64,7 @@ export default function Home() {
         const processRes = await fetch("/api/process", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: transcript }),
+          body: JSON.stringify({ prompt: transcript, language: settings.aiResponseLanguage }),
         });
 
         const data = await processRes.json();

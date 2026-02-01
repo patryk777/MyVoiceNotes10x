@@ -7,12 +7,14 @@ export type TranslationLanguage = "angielski" | "niemiecki" | "francuski" | "his
 
 export interface Settings {
   appLanguage: AppLanguage;
+  aiResponseLanguage: AppLanguage;
   defaultTranslationLanguage: TranslationLanguage;
   maxRecordingSeconds: number;
 }
 
 const DEFAULT_SETTINGS: Settings = {
   appLanguage: "pl",
+  aiResponseLanguage: "pl",
   defaultTranslationLanguage: "angielski",
   maxRecordingSeconds: 60,
 };
@@ -61,6 +63,7 @@ export const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     appLanguageLabel: "Język interfejsu",
     translationLanguageLabel: "Domyślny język tłumaczenia",
     maxRecordingLabel: "Maksymalny czas nagrania",
+    aiResponseLanguageLabel: "Język generowanych notatek",
     seconds: "sek",
     minutes: "min",
     close: "Zamknij",
@@ -109,6 +112,7 @@ export const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     appLanguageLabel: "Interface language",
     translationLanguageLabel: "Default translation language",
     maxRecordingLabel: "Maximum recording time",
+    aiResponseLanguageLabel: "Generated notes language",
     seconds: "sec",
     minutes: "min",
     close: "Close",

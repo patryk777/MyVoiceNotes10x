@@ -35,7 +35,7 @@
 | 🏷️ **Tagi i kolory** | Organizacja wizualna |
 | ⏰ **Przypomnienia** | Ustawianie terminów |
 | 📜 **Historia wersji** | Przywracanie poprzednich wersji |
-| 🌍 **Wielojęzyczność** | Interfejs PL/EN, tłumaczenie notatek |
+| 🌍 **Wielojęzyczność** | Interfejs PL/EN, tłumaczenie notatek, język generowanych notatek AI |
 | 📱 **Mobile First** | Responsywny design |
 | 💡 **Tooltips** | Rozbudowane opisy przycisków z emoji |
 | 🖼️ **Obrazki** | Dodawanie zdjęć z automatyczną kompresją do 450KB |

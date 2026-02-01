@@ -4,6 +4,7 @@ import { Settings } from "@/hooks/useSettings";
 
 const mockSettings: Settings = {
   appLanguage: "pl",
+  aiResponseLanguage: "pl",
   defaultTranslationLanguage: "angielski",
   maxRecordingSeconds: 60,
 };
@@ -12,6 +13,7 @@ const mockT = (key: string) => {
   const translations: Record<string, string> = {
     settings: "Ustawienia",
     appLanguageLabel: "Język interfejsu",
+    aiResponseLanguageLabel: "Język notatek AI",
     translationLanguageLabel: "Domyślny język tłumaczenia",
     maxRecordingLabel: "Maksymalny czas nagrania",
     seconds: "sek",
@@ -50,8 +52,8 @@ describe("SettingsModal", () => {
         t={mockT}
       />
     );
-    expect(screen.getByRole("button", { name: /Polski/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /English/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Polski/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /English/i }).length).toBeGreaterThan(0);
   });
 
   it("should render translation language dropdown", () => {
@@ -88,7 +90,8 @@ describe("SettingsModal", () => {
       />
     );
     
-    fireEvent.click(screen.getByRole("button", { name: /English/i }));
+    const englishButtons = screen.getAllByRole("button", { name: /English/i });
+    fireEvent.click(englishButtons[0]);
     
     expect(mockOnUpdate).toHaveBeenCalledWith({ appLanguage: "en" });
   });
