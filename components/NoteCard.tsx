@@ -88,6 +88,10 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
             rows={6}
             className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-300 focus:outline-none focus:border-blue-500 resize-none"
           />
+          <div className="flex justify-between text-xs text-zinc-500">
+            <span>{editTitle.length} znaków w tytule</span>
+            <span>{editContent.length} znaków w treści</span>
+          </div>
           <div className="flex gap-2">
             <button
               onClick={handleSave}
