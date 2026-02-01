@@ -28,11 +28,15 @@ export function RecordingSection({
     <div className="flex items-center gap-4">
       <button
         onClick={onMicClick}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          if (!isWorking) onMicClick();
+        }}
         disabled={isWorking}
-        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all ${
+        className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all touch-manipulation select-none z-10 ${
           status === "recording"
             ? "bg-red-600 animate-pulse"
-            : "bg-red-600 hover:bg-red-500"
+            : "bg-red-600 hover:bg-red-500 active:bg-red-400"
         } ${isWorking ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         aria-label={status === "recording" ? "Stop recording" : "Start recording"}
         title={status === "recording" ? "⏹️ Zatrzymaj nagrywanie - kliknij aby zakończyć i przetworzyć" : "🎤 Nagraj notatkę - kliknij i mów, AI automatycznie przetworzy"}
