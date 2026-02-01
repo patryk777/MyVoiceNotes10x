@@ -243,7 +243,7 @@ export default function Home() {
             onClick={exportToMarkdown}
             disabled={getFilteredNotes().length === 0}
             className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Export do Markdown"
+            title={searchQuery ? "Export filtrowanych do .md" : "Export wszystkich do .md"}
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">.md</span>
@@ -252,7 +252,7 @@ export default function Home() {
             onClick={exportToPdf}
             disabled={getFilteredNotes().length === 0}
             className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Export do PDF"
+            title={searchQuery ? "Export filtrowanych do .pdf" : "Export wszystkich do .pdf"}
           >
             <FileDown className="w-4 h-4" />
             <span className="hidden sm:inline">.pdf</span>
