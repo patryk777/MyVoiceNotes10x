@@ -102,6 +102,14 @@ Goal: Ship a working MVP to Vercel.
 4. **Comments:** Only for "why", not "what". Code should be self-documenting.
 5. **Testing:** Write tests for hooks and components. Mock external APIs.
 
+## SOLID PRINCIPLES
+
+1. **S - Single Responsibility:** One reason to change per module/component.
+2. **O - Open/Closed:** Open for extension, closed for modification. Use composition.
+3. **L - Liskov Substitution:** Subtypes must be substitutable for base types.
+4. **I - Interface Segregation:** Many specific interfaces > one general interface.
+5. **D - Dependency Inversion:** Depend on abstractions (interfaces/types), not concretions.
+
 ## BEHAVIOR
 
 - Don't explain. Just code.
