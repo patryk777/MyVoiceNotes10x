@@ -294,6 +294,7 @@ main
 | **Image preview modal** | Fullscreen podgląd zamiast window.open |
 | **Język notatek AI** | Ustawienie PL/EN dla generowanych notatek |
 | **GitHub Actions CI** | Automatyczne testy przy push/PR |
+| **Prosty ekran logowania** | Ochrona dostępu do aplikacji (localStorage) |
 
 ### ⚠️ Wyzwania
 

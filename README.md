@@ -40,6 +40,7 @@
 | 📱 **Mobile First** | Responsywny design |
 | 💡 **Tooltips** | Rozbudowane opisy przycisków z emoji |
 | 🖼️ **Obrazki** | Dodawanie zdjęć z automatyczną kompresją do 450KB |
+| 🔐 **Logowanie** | Prosty ekran logowania chroniący dostęp do aplikacji |
 
 ## 🛠️ Stack technologiczny
 
