@@ -166,15 +166,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "r" && !e.shiftKey) {
-        e.preventDefault();
-        if (status === "idle" && !isProcessing) {
-          startRecording();
-        } else if (status === "recording") {
-          stopRecording();
-        }
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === "e") {
+            if ((e.ctrlKey || e.metaKey) && e.key === "e") {
         e.preventDefault();
         if (notes.length > 0) {
           handleExportMarkdown();
@@ -200,7 +192,7 @@ export default function Home() {
   }, [status, isProcessing, notes.length, isSummarizing, summary, startRecording, stopRecording, undo]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-full">
       {showSettings && (
         <SettingsModal
           settings={settings}

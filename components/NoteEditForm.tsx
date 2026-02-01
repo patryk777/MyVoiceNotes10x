@@ -164,22 +164,47 @@ export function NoteEditForm({
       />
       
       {/* Tags */}
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={editTags}
-          onChange={(e) => setEditTags(e.target.value)}
-          placeholder={t("tags")}
-          className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
-        />
-        <button
-          onClick={suggestTags}
-          disabled={isSuggestingTags || (!editTitle && !editContent)}
-          className="flex items-center gap-1 px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded text-xs disabled:opacity-50"
-          title={t("generateTagsAI")}
-        >
-          {isSuggestingTags ? <Loader2 className="w-3 h-3 animate-spin" /> : <Tags className="w-3 h-3" />}
-        </button>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={editTags}
+            onChange={(e) => setEditTags(e.target.value)}
+            placeholder={t("tags")}
+            className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
+          />
+          <button
+            onClick={suggestTags}
+            disabled={isSuggestingTags || (!editTitle && !editContent)}
+            className="flex items-center gap-1 px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded text-xs disabled:opacity-50"
+            title={t("generateTagsAI")}
+          >
+            {isSuggestingTags ? <Loader2 className="w-3 h-3 animate-spin" /> : <Tags className="w-3 h-3" />}
+          </button>
+        </div>
+        {editTags && (
+          <div className="flex flex-wrap gap-1">
+            {editTags.split(",").map((tag) => tag.trim()).filter(Boolean).map((tag, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-zinc-700 text-zinc-300 text-xs rounded"
+              >
+                #{tag}
+                <button
+                  onClick={() => {
+                    const tags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
+                    tags.splice(idx, 1);
+                    setEditTags(tags.join(", "));
+                  }}
+                  className="text-zinc-400 hover:text-red-400"
+                  title="Usuń tag"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Colors */}

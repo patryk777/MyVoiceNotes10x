@@ -68,7 +68,7 @@ export function KanbanBoard({
   };
 
   return (
-    <section className="flex-1 overflow-x-auto p-2 sm:p-4">
+    <section className="flex-1 p-2 sm:p-4 overflow-hidden">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 h-full min-w-0">
         {CATEGORIES.map((cat) => (
           <div
@@ -94,7 +94,7 @@ export function KanbanBoard({
               </div>
             </div>
 
-            <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-280px)]">
+            <div className="flex-1 p-2 space-y-2">
               {getFilteredNotesByCategory(cat.id).map((note) => (
                 <NoteCard
                   key={note.id}

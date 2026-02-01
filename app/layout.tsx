@@ -12,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col">
+    <html lang="en" className="h-full">
+      <body className="h-full flex flex-col">
         <header className="border-b border-zinc-800 py-3 px-4 sm:py-4 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-3">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
@@ -27,7 +27,7 @@ export default function RootLayout({
             Zamień głos w uporządkowane notatki z automatyczną kategoryzacją
           </p>
         </header>
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </body>
     </html>
   );

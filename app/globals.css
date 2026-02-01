@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-body {
+html, body {
   @apply bg-zinc-950 text-zinc-100;
+  overflow-x: hidden;
+  width: 100%;
 }
