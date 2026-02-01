@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
 import { useSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/hooks/useAuth";
 import { SettingsModal } from "@/components/modals/SettingsModal";
 import { RecordingSection } from "@/components/RecordingSection";
 import { ActionBar } from "@/components/ActionBar";
@@ -11,6 +12,7 @@ import { SummaryModal } from "@/components/modals/SummaryModal";
 import { KanbanBoard } from "@/components/notes/KanbanBoard";
 import { HelpModal } from "@/components/modals/HelpModal";
 import { exportToMarkdown, exportToPdf } from "@/lib/export";
+import { LogOut } from "lucide-react";
 
 const CATEGORIES_FOR_EXPORT = [
   { id: "tasks" as NoteCategory, label: "Zadania" },
@@ -20,6 +22,7 @@ const CATEGORIES_FOR_EXPORT = [
 ];
 
 export default function Home() {
+  const { isAuthenticated, logout } = useAuth();
   const { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo, archiveNote, unarchiveNote } = useNotes();
   const { settings, updateSettings, t } = useSettings();
   const [searchQuery, setSearchQuery] = useState("");
@@ -191,6 +194,15 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [status, isProcessing, notes.length, isSummarizing, summary, startRecording, stopRecording, undo]);
 
+  // Show loading while checking auth
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+        <div className="text-zinc-400">Ładowanie...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-full">
       {showSettings && (
@@ -229,6 +241,7 @@ export default function Home() {
           onSummarize={generateSummary}
           onOpenSettings={() => setShowSettings(true)}
           onOpenHelp={() => setShowHelp(true)}
+          onLogout={logout}
           isSummarizing={isSummarizing}
           hasNotes={getFilteredNotes().length > 0}
           t={t}

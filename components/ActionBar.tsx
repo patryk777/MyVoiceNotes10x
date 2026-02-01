@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Download, FileDown, Sparkles, Loader2, Undo2, Archive, Settings, HelpCircle } from "lucide-react";
+import { Search, Download, FileDown, Sparkles, Loader2, Undo2, Archive, Settings, HelpCircle, LogOut } from "lucide-react";
 
 interface ActionBarProps {
   searchQuery: string;
@@ -14,6 +14,7 @@ interface ActionBarProps {
   onSummarize: () => void;
   onOpenSettings: () => void;
   onOpenHelp: () => void;
+  onLogout: () => void;
   isSummarizing: boolean;
   hasNotes: boolean;
   t: (key: string) => string;
@@ -31,6 +32,7 @@ export function ActionBar({
   onSummarize,
   onOpenSettings,
   onOpenHelp,
+  onLogout,
   isSummarizing,
   hasNotes,
   t,
@@ -110,6 +112,13 @@ export function ActionBar({
           <Sparkles className="w-4 h-4" />
         )}
         <span className="hidden sm:inline">{t("summarize")}</span>
+      </button>
+      <button
+        onClick={onLogout}
+        className="p-2 bg-zinc-800 hover:bg-red-600 border border-zinc-700 rounded-lg text-zinc-300 hover:text-white cursor-pointer"
+        title="🚪 Wyloguj się"
+      >
+        <LogOut className="w-4 h-4" />
       </button>
     </div>
   );
