@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2 } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown, Sparkles, X, ArrowUpDown, Undo2, Archive } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
@@ -15,7 +15,7 @@ const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; colo
 ];
 
 export default function Home() {
-  const { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo } = useNotes();
+  const { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo, archiveNote, unarchiveNote } = useNotes();
   const [searchQuery, setSearchQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
@@ -24,6 +24,7 @@ export default function Home() {
   const [sortOrder, setSortOrder] = useState<Record<NoteCategory, "date" | "alpha">>(
     { tasks: "date", ideas: "date", notes: "date", meetings: "date" }
   );
+  const [showArchive, setShowArchive] = useState(false);
 
   const processAudio = useCallback(async (blob: Blob) => {
     if (!blob || isProcessing) return;
@@ -85,6 +86,7 @@ export default function Home() {
   const getFilteredNotesByCategory = (category: NoteCategory): Note[] => {
     const filtered = notes.filter((n) => {
       if (n.category !== category) return false;
+      if (showArchive ? !n.archived : n.archived) return false;
       if (!searchQuery) return true;
       const query = searchQuery.toLowerCase();
       return (
@@ -367,6 +369,13 @@ export default function Home() {
           >
             <Undo2 className="w-4 h-4" />
           </button>
+          <button
+            onClick={() => setShowArchive(!showArchive)}
+            className={`p-2 border rounded-lg ${showArchive ? "bg-yellow-600 border-yellow-500 text-white" : "bg-zinc-800 hover:bg-zinc-700 border-zinc-700 text-zinc-300"}`}
+            title={showArchive ? "Pokaż aktywne" : "Pokaż archiwum"}
+          >
+            <Archive className="w-4 h-4" />
+          </button>
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
@@ -448,6 +457,8 @@ export default function Home() {
                     onDelete={deleteNote}
                     onUpdate={updateNote}
                     onDragStart={handleDragStart}
+                    onArchive={archiveNote}
+                    onUnarchive={unarchiveNote}
                   />
                 ))}
                 {getFilteredNotesByCategory(cat.id).length === 0 && (

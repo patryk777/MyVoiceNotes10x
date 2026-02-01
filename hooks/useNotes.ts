@@ -16,6 +16,7 @@ export interface Note {
   tags?: string[];
   color?: NoteColor;
   reminder?: number;
+  archived?: boolean;
 }
 
 const STORAGE_KEY = "voice-to-structure-notes";
@@ -101,5 +102,23 @@ export function useNotes() {
 
   const canUndo = history.length > 0;
 
-  return { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo };
+  const archiveNote = useCallback((id: string) => {
+    setNotes((prev) => {
+      pushHistory(prev);
+      const updated = prev.map((n) => (n.id === id ? { ...n, archived: true } : n));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, [pushHistory]);
+
+  const unarchiveNote = useCallback((id: string) => {
+    setNotes((prev) => {
+      pushHistory(prev);
+      const updated = prev.map((n) => (n.id === id ? { ...n, archived: false } : n));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, [pushHistory]);
+
+  return { notes, saveNote, updateNoteCategory, updateNote, deleteNote, undo, canUndo, archiveNote, unarchiveNote };
 }

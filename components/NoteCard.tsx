@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Note, NoteColor } from "@/hooks/useNotes";
 
@@ -21,9 +21,11 @@ interface NoteCardProps {
   onDelete: (id: string) => void;
   onUpdate: (id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
+  onArchive?: (id: string) => void;
+  onUnarchive?: (id: string) => void;
 }
 
-export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProps) {
+export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onUnarchive }: NoteCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(note.title);
@@ -183,6 +185,27 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
+              {note.archived ? (
+                onUnarchive && (
+                  <button
+                    onClick={() => onUnarchive(note.id)}
+                    className="p-1 text-zinc-500 hover:text-green-400"
+                    aria-label="Restore from archive"
+                  >
+                    <ArchiveRestore className="w-3.5 h-3.5" />
+                  </button>
+                )
+              ) : (
+                onArchive && (
+                  <button
+                    onClick={() => onArchive(note.id)}
+                    className="p-1 text-zinc-500 hover:text-yellow-400"
+                    aria-label="Archive note"
+                  >
+                    <Archive className="w-3.5 h-3.5" />
+                  </button>
+                )
+              )}
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="p-1 text-zinc-500 hover:text-red-500"
