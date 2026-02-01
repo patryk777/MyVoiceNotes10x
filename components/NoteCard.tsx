@@ -38,7 +38,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   }, [note.content]);
 
   const handleSave = (title: string, content: string, tags: string[], color: NoteColor, reminder: number | null, images: string[]) => {
-    onUpdate(note.id, title, content, tags.length > 0 ? tags : undefined, color, reminder, images.length > 0 ? images : undefined);
+    onUpdate(note.id, title, content, tags, color, reminder, images);
     setIsEditing(false);
     setRestoredVersion(null);
   };

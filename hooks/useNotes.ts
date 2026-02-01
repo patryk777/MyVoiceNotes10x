@@ -85,11 +85,11 @@ export function useNotes() {
           ...n, 
           title, 
           content, 
-          tags: tags ?? n.tags, 
+          tags: tags !== undefined ? tags : n.tags, 
           color: color ?? n.color,
           reminder: reminder === null ? undefined : (reminder ?? n.reminder),
           versions: newVersion ? [...(n.versions || []).slice(-9), newVersion] : n.versions,
-          images: images ?? n.images
+          images: images !== undefined ? images : n.images
         };
       });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
