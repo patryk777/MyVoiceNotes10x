@@ -4,7 +4,7 @@
   "buildCommand": "npm test && npm run build",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "regions": ["waw1"],
+  "regions": ["fra1"],
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
