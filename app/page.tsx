@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download } from "lucide-react";
+import { Mic, Square, Loader2, CheckSquare, Lightbulb, FileText, Calendar, Search, Download, FileDown } from "lucide-react";
 import { useRecorder } from "@/hooks/useRecorder";
 import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
 import { NoteCard } from "@/components/NoteCard";
@@ -135,6 +135,46 @@ export default function Home() {
     URL.revokeObjectURL(url);
   };
 
+  const exportToPdf = () => {
+    const filteredNotes = getFilteredNotes();
+    if (filteredNotes.length === 0) return;
+
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:.]/g, "-").slice(0, 19);
+
+    const notesHtml = CATEGORIES.map((cat) => {
+      const catNotes = filteredNotes
+        .filter((n) => n.category === cat.id)
+        .sort((a, b) => b.createdAt - a.createdAt);
+      if (catNotes.length === 0) return "";
+      const notesContent = catNotes
+        .map(
+          (n) =>
+            `<div class="note"><h3>${n.title}</h3><div class="note-date">${new Date(n.createdAt).toLocaleString("pl-PL")}</div><div class="note-content">${n.content.replace(/\n/g, "<br>")}</div></div>`
+        )
+        .join("");
+      return `<h2>${cat.label}</h2>${notesContent}`;
+    })
+      .filter(Boolean)
+      .join("");
+
+    const filterHtml = searchQuery
+      ? `<p><strong>Filtr:</strong> "${searchQuery}"</p>`
+      : "";
+
+    const htmlContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>MyVoiceNotes Export</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:800px;margin:0 auto;padding:40px 20px;color:#1a1a1a}h1{color:#e53e3e;border-bottom:2px solid #e53e3e;padding-bottom:10px}h2{color:#dd6b20;margin-top:30px}h3{color:#2d3748;margin-top:20px}.meta{color:#718096;font-size:14px;margin-bottom:30px}.note{background:#f7fafc;border-left:4px solid #4299e1;padding:15px;margin:15px 0;border-radius:0 8px 8px 0}.note-date{color:#a0aec0;font-size:12px;font-style:italic}.note-content{margin-top:10px;line-height:1.6}ul{padding-left:20px}li{margin:5px 0}@media print{body{padding:20px}}</style></head><body><h1>MyVoiceNotes Export</h1><div class="meta">${filterHtml}<p><strong>Eksport:</strong> ${now.toLocaleString("pl-PL")}</p><p><strong>Liczba notatek:</strong> ${filteredNotes.length}</p></div>${notesHtml}</body></html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      printWindow.document.title = `${timestamp}_MyVoiceNotes${searchQuery ? "_" + searchQuery.replace(/\s+/g, "-") : ""}`;
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  };
+
   const handleDragStart = (e: React.DragEvent, noteId: string) => {
     e.dataTransfer.setData("noteId", noteId);
   };
@@ -203,9 +243,19 @@ export default function Home() {
             onClick={exportToMarkdown}
             disabled={getFilteredNotes().length === 0}
             className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Export do Markdown"
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">.md</span>
+          </button>
+          <button
+            onClick={exportToPdf}
+            disabled={getFilteredNotes().length === 0}
+            className="flex items-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-sm text-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Export do PDF"
+          >
+            <FileDown className="w-4 h-4" />
+            <span className="hidden sm:inline">.pdf</span>
           </button>
         </div>
       </section>
