@@ -225,8 +225,10 @@ MyVoiceNotes10x/
 │   ├── constants.ts          # Colors, categories
 │   ├── export.ts             # MD/PDF export logic
 │   └── types.ts              # API response types
-├── __tests__/                # 70 Jest tests
-└── __mocks__/                # Test mocks
+├── __tests__/                # 153 Jest tests (87% coverage)
+├── __mocks__/                # Test mocks
+├── vercel.json               # Vercel config (waw1 region)
+└── .windsurfrules            # AI assistant rules (167 lines)
 ```
 
 ## 📄 Licencja
