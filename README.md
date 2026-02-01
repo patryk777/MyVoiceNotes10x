@@ -5,7 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-169%20passed-green)](./package.json)
+[![Tests](https://img.shields.io/badge/Tests-190%20passed-green)](./package.json)
 
 ## 📋 Cel projektu
 
@@ -87,7 +87,13 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 ## 🧪 Testy
 
-Projekt zawiera **169 testów** jednostkowych:
+Projekt zawiera **190 testów** (169 unit + 21 E2E):
+
+### Unit testy (Jest)
+
+```bash
+npm test
+```
 
 ```
 __tests__/
@@ -110,6 +116,31 @@ __tests__/
 │   └── export.test.ts             (11 testów)
 └── api/
     └── validation.test.ts         (16 testów)
+```
+
+### E2E testy (Playwright)
+
+```bash
+npm run test:e2e        # headless
+npm run test:e2e:headed # z przeglądarką
+npm run test:e2e:ui     # interaktywny UI
+```
+
+```
+e2e/
+└── app.spec.ts                    (21 testów)
+    ├── Page Load (3)
+    ├── Kanban Board (2)
+    ├── Search Functionality (2)
+    ├── Action Bar (3)
+    ├── Settings Modal (2)
+    ├── Recording Section (2)
+    ├── Keyboard Shortcuts (1)
+    ├── Archive Toggle (1)
+    ├── Summarize Feature (1)
+    ├── Accessibility (2)
+    ├── Dark Theme (1)
+    └── LocalStorage Persistence (1)
 ```
 
 ## 🔒 Zabezpieczenia API
