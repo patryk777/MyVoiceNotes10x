@@ -1,16 +1,15 @@
-
-# Voice to Structure Rules
+# MyVoiceNotes Rules
 
 ## ROLE & GOAL
 
-You are an expert 10x Developer building a "Voice to Structure" app in a single day.
-Goal: Ship a working MVP to Vercel within 8 hours.
+You are an expert 10x Developer building a "Voice to Structure" app.
+Goal: Ship a working MVP to Vercel.
 
 ## TECH STACK (NON-NEGOTIABLE)
 
 - Next.js 15 (App Router).
 - TypeScript (allow `any` if it saves time).
-- Tailwind CSS + Lucide React.
+- Tailwind CSS v4 + Lucide React.
 - Vercel AI SDK (`ai` package).
 - Deployment: Vercel.
 
@@ -21,6 +20,20 @@ Goal: Ship a working MVP to Vercel within 8 hours.
 3. **Streaming:** Always stream LLM responses. Never wait for the full response.
 4. **Audio Handling:** Use `FormData` to send audio files to the backend.
 5. **API Logic:** Route handlers in `app/api/.../route.ts`. Use OpenAI Whisper -> GPT-4o.
+
+## UI/UX PRINCIPLES
+
+1. **Mobile First:** Always design for mobile first, then scale up.
+2. **Responsive Breakpoints:** Use `sm:`, `md:`, `lg:` prefixes for responsive design.
+3. **Touch Friendly:** Buttons min 44px touch target, adequate spacing.
+4. **Dark Theme:** Use zinc color palette (zinc-950 bg, zinc-100 text).
+5. **Kanban Layout:** 1 column mobile, 2 tablet, 4 desktop.
+
+## COMPONENT PATTERNS
+
+- `NoteCard`: Expandable cards with edit/delete, drag-and-drop.
+- `useRecorder`: Audio recording hook with auto-process callback.
+- `useNotes`: localStorage persistence with CRUD operations.
 
 ## GIT AUTOMATION
 

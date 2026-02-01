@@ -14,16 +14,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        <header className="border-b border-zinc-800 py-4 px-6">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+        <header className="border-b border-zinc-800 py-3 px-4 sm:py-4 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
               MyVoiceNotes
             </h1>
-            <span className="text-xs text-zinc-500 border border-zinc-700 rounded px-2 py-0.5">
+            <span className="text-[10px] sm:text-xs text-zinc-500 border border-zinc-700 rounded px-1.5 sm:px-2 py-0.5">
               AI-Powered
             </span>
           </div>
-          <p className="text-sm text-zinc-500 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-500 mt-1 hidden sm:block">
             Zamień głos w uporządkowane notatki z automatyczną kategoryzacją
           </p>
         </header>
