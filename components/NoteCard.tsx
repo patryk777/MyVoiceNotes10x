@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash, Wand2, Loader2 } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash, Wand2, Loader2, Tags } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Note, NoteColor, NoteCategory } from "@/hooks/useNotes";
 
@@ -41,6 +41,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const [editImages, setEditImages] = useState<string[]>(note.images || []);
   const [isSuggestingCategory, setIsSuggestingCategory] = useState(false);
   const [suggestedCategory, setSuggestedCategory] = useState<NoteCategory | null>(null);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -99,6 +100,28 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
       console.error("Category suggestion error:", err);
     } finally {
       setIsSuggestingCategory(false);
+    }
+  };
+
+  const suggestTags = async () => {
+    if (!editTitle && !editContent) return;
+    setIsSuggestingTags(true);
+    try {
+      const res = await fetch("/api/suggest-tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: editTitle, content: editContent }),
+      });
+      const data = await res.json();
+      if (data.tags && data.tags.length > 0) {
+        const currentTags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
+        const newTags = [...new Set([...currentTags, ...data.tags])];
+        setEditTags(newTags.join(", "));
+      }
+    } catch (err) {
+      console.error("Tags suggestion error:", err);
+    } finally {
+      setIsSuggestingTags(false);
     }
   };
 
@@ -211,13 +234,23 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
             rows={6}
             className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-sm text-zinc-300 focus:outline-none focus:border-blue-500 resize-none"
           />
-          <input
-            type="text"
-            value={editTags}
-            onChange={(e) => setEditTags(e.target.value)}
-            placeholder="Tagi (oddzielone przecinkami)"
-            className="w-full bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
-          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={editTags}
+              onChange={(e) => setEditTags(e.target.value)}
+              placeholder="Tagi (oddzielone przecinkami)"
+              className="flex-1 bg-zinc-900 border border-zinc-600 rounded px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:border-blue-500"
+            />
+            <button
+              onClick={suggestTags}
+              disabled={isSuggestingTags || (!editTitle && !editContent)}
+              className="flex items-center gap-1 px-2 py-1 bg-purple-600 hover:bg-purple-500 rounded text-xs disabled:opacity-50"
+              title="Generuj tagi AI"
+            >
+              {isSuggestingTags ? <Loader2 className="w-3 h-3 animate-spin" /> : <Tags className="w-3 h-3" />}
+            </button>
+          </div>
           <div className="flex gap-1">
             {NOTE_COLORS.map((c) => (
               <button
