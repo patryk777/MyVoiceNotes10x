@@ -18,6 +18,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   const [editTitle, setEditTitle] = useState(note.title);
   const [editContent, setEditContent] = useState(note.content);
   const [isTruncated, setIsTruncated] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,12 +39,42 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   };
 
   return (
-    <div
-      draggable={!isEditing}
-      onDragStart={(e) => onDragStart(e, note.id)}
-      className="bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-colors group"
-    >
-      {isEditing ? (
+    <>
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-lg border border-zinc-700 p-4 max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-2">Usuń notatkę?</h3>
+            <p className="text-zinc-400 text-sm mb-4">
+              Czy na pewno chcesz usunąć "{note.title}"? Tej akcji nie można cofnąć.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 rounded text-sm"
+              >
+                Anuluj
+              </button>
+              <button
+                onClick={() => {
+                  onDelete(note.id);
+                  setShowDeleteConfirm(false);
+                }}
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded text-sm"
+              >
+                Usuń
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div
+        draggable={!isEditing}
+        onDragStart={(e) => onDragStart(e, note.id)}
+        className="bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-colors group"
+      >
+        {isEditing ? (
         <div className="space-y-2">
           <input
             type="text"
@@ -90,7 +121,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => onDelete(note.id)}
+                onClick={() => setShowDeleteConfirm(true)}
                 className="p-1 text-zinc-500 hover:text-red-500"
                 aria-label="Delete note"
               >
@@ -132,6 +163,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
           </div>
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }
