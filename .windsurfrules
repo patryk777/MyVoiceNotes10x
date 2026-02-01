@@ -38,6 +38,9 @@ Goal: Ship a working MVP to Vercel.
 ## GIT AUTOMATION
 
 - When I type "Commit", run `git add .` and generate a conventional commit message (e.g., `feat: add recorder hook`).
+- **Git Flow:** For new features, create a feature branch (e.g., `feat/feature-name`), commit changes there, then merge to `main` when complete.
+- Branch naming: `feat/`, `fix/`, `test/`, `refactor/` prefixes.
+- Always merge feature branches to `main` after completion.
 
 ## BEHAVIOR
 
