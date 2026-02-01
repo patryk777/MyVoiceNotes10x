@@ -290,6 +290,8 @@ main
 | **`.windsurfrules`** | AI rozumie kontekst projektu |
 | **MCP Servers** | Rozszerzone możliwości AI (10 serwerów) |
 | **Rozbudowane tooltips** | UX z opisami funkcji |
+| **Obrazki z kompresją** | Automatyczna kompresja do 450KB |
+| **Image preview modal** | Fullscreen podgląd zamiast window.open |
 
 ### ⚠️ Wyzwania
 
