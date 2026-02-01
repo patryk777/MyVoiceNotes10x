@@ -114,6 +114,8 @@ __tests__/
 
 ## 🔒 Zabezpieczenia API
 
+> ✅ **Zweryfikowano** - brak wycieków API keys, secrets bezpiecznie w `.env.local`
+
 Wszystkie endpointy mają limity chroniące przed nadmiernym zużyciem tokenów:
 
 | Endpoint | Limit | Opis |
