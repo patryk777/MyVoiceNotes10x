@@ -29,6 +29,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const [showHistory, setShowHistory] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [restoredVersion, setRestoredVersion] = useState<NoteVersion | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -68,6 +69,20 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
           onCancel={() => setShowDeleteConfirm(false)}
           t={t}
         />
+      )}
+
+      {previewImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img 
+            src={previewImage} 
+            alt="Preview" 
+            className="max-w-full max-h-full object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       )}
 
       {showHistory && note.versions && note.versions.length > 0 && (
@@ -183,7 +198,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
             {note.images && note.images.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {note.images.map((img, idx) => (
-                  <img key={idx} src={img} alt="" className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onClick={() => window.open(img, "_blank")} />
+                  <img key={idx} src={img} alt="" className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onClick={() => setPreviewImage(img)} />
                 ))}
               </div>
             )}

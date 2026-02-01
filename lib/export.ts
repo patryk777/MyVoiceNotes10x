@@ -77,8 +77,12 @@ export function exportToPdf(
       if (catNotes.length === 0) return "";
       const notesContent = catNotes
         .map(
-          (n) =>
-            `<div class="note"><h3>${n.title}</h3><div class="note-date">${new Date(n.createdAt).toLocaleString()}</div><div class="note-content">${parseMarkdownToHtml(n.content)}</div></div>`
+          (n) => {
+            const imagesHtml = n.images && n.images.length > 0
+              ? `<div class="note-images">${n.images.map(img => `<img src="${img}" alt="Note image" style="max-width:200px;max-height:200px;margin:5px;border-radius:4px;">`).join("")}</div>`
+              : "";
+            return `<div class="note"><h3>${n.title}</h3><div class="note-date">${new Date(n.createdAt).toLocaleString()}</div><div class="note-content">${parseMarkdownToHtml(n.content)}</div>${imagesHtml}</div>`;
+          }
         )
         .join("");
       return `<h2>${cat.label}</h2>${notesContent}`;
