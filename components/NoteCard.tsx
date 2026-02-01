@@ -19,6 +19,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
   const [editContent, setEditContent] = useState(note.content);
   const [isTruncated, setIsTruncated] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -71,8 +72,14 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart }: NoteCardProp
 
       <div
         draggable={!isEditing}
-        onDragStart={(e) => onDragStart(e, note.id)}
-        className="bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-colors group"
+        onDragStart={(e) => {
+          setIsDragging(true);
+          onDragStart(e, note.id);
+        }}
+        onDragEnd={() => setIsDragging(false)}
+        className={`bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-all duration-200 group ${
+          isDragging ? "opacity-50 scale-95 rotate-2 shadow-xl" : ""
+        }`}
       >
         {isEditing ? (
         <div className="space-y-2">
