@@ -24,6 +24,7 @@ export interface Note {
   reminder?: number;
   archived?: boolean;
   versions?: NoteVersion[];
+  images?: string[];
 }
 
 const STORAGE_KEY = "voice-to-structure-notes";
@@ -73,7 +74,7 @@ export function useNotes() {
     });
   }, [pushHistory]);
 
-  const updateNote = useCallback((id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null) => {
+  const updateNote = useCallback((id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null, images?: string[]) => {
     setNotes((prev) => {
       pushHistory(prev);
       const updated = prev.map((n) => {
@@ -87,7 +88,8 @@ export function useNotes() {
           tags: tags ?? n.tags, 
           color: color ?? n.color,
           reminder: reminder === null ? undefined : (reminder ?? n.reminder),
-          versions: newVersion ? [...(n.versions || []).slice(-9), newVersion] : n.versions
+          versions: newVersion ? [...(n.versions || []).slice(-9), newVersion] : n.versions,
+          images: images ?? n.images
         };
       });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));

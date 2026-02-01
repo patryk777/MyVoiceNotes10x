@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp, Pencil, Check, X, Bell, Archive, ArchiveRestore, History, ImagePlus, Trash } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Note, NoteColor } from "@/hooks/useNotes";
 
@@ -19,7 +19,7 @@ const NOTE_COLORS: { id: NoteColor; bg: string; border: string }[] = [
 interface NoteCardProps {
   note: Note;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null) => void;
+  onUpdate: (id: string, title: string, content: string, tags?: string[], color?: NoteColor, reminder?: number | null, images?: string[]) => void;
   onDragStart: (e: React.DragEvent, noteId: string) => void;
   onArchive?: (id: string) => void;
   onUnarchive?: (id: string) => void;
@@ -37,7 +37,9 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const [editTags, setEditTags] = useState(note.tags?.join(", ") || "");
   const [editColor, setEditColor] = useState<NoteColor>(note.color || "default");
   const [editReminder, setEditReminder] = useState(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
+  const [editImages, setEditImages] = useState<string[]>(note.images || []);
   const contentRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -48,8 +50,31 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
   const handleSave = () => {
     const tags = editTags.split(",").map((t) => t.trim()).filter(Boolean);
     const reminder = editReminder ? new Date(editReminder).getTime() : null;
-    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined, editColor, reminder);
+    onUpdate(note.id, editTitle, editContent, tags.length > 0 ? tags : undefined, editColor, reminder, editImages.length > 0 ? editImages : undefined);
     setIsEditing(false);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    
+    Array.from(files).forEach((file) => {
+      if (file.size > 500000) {
+        alert("Plik jest za duży (max 500KB)");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setEditImages((prev) => [...prev, base64]);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  };
+
+  const removeImage = (index: number) => {
+    setEditImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCancel = () => {
@@ -58,6 +83,7 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
     setEditTags(note.tags?.join(", ") || "");
     setEditColor(note.color || "default");
     setEditReminder(note.reminder ? new Date(note.reminder).toISOString().slice(0, 16) : "");
+    setEditImages(note.images || []);
     setIsEditing(false);
   };
 
@@ -191,6 +217,37 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
               </button>
             )}
           </div>
+          <div className="space-y-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1 px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-xs"
+            >
+              <ImagePlus className="w-3 h-3" /> Dodaj zdjęcie
+            </button>
+            {editImages.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {editImages.map((img, idx) => (
+                  <div key={idx} className="relative">
+                    <img src={img} alt="" className="w-16 h-16 object-cover rounded" />
+                    <button
+                      onClick={() => removeImage(idx)}
+                      className="absolute -top-1 -right-1 bg-red-600 rounded-full p-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex justify-between text-xs text-zinc-500">
             <span>{editTitle.length} znaków w tytule</span>
             <span>{editContent.length} znaków w treści</span>
@@ -280,6 +337,14 @@ export function NoteCard({ note, onDelete, onUpdate, onDragStart, onArchive, onU
           >
             <ReactMarkdown>{note.content}</ReactMarkdown>
           </div>
+
+          {note.images && note.images.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {note.images.map((img, idx) => (
+                <img key={idx} src={img} alt="" className="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onClick={() => window.open(img, "_blank")} />
+              ))}
+            </div>
+          )}
 
           {note.tags && note.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
