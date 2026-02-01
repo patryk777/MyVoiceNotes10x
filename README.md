@@ -5,7 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-153%20passed-green)](./package.json)
+[![Tests](https://img.shields.io/badge/Tests-169%20passed-green)](./package.json)
 
 ## 📋 Cel projektu
 
@@ -87,7 +87,7 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 ## 🧪 Testy
 
-Projekt zawiera **153 testy** jednostkowe:
+Projekt zawiera **169 testów** jednostkowych:
 
 ```
 __tests__/
@@ -105,10 +105,25 @@ __tests__/
 │   ├── RecordingSection.test.tsx  (10 testów)
 │   ├── SettingsModal.test.tsx     (4 testy)
 │   └── SummaryModal.test.tsx      (8 testów)
-└── lib/
-    ├── constants.test.ts          (14 testów)
-    └── export.test.ts             (11 testów)
+├── lib/
+│   ├── constants.test.ts          (14 testów)
+│   └── export.test.ts             (11 testów)
+└── api/
+    └── validation.test.ts         (16 testów)
 ```
+
+## 🔒 Zabezpieczenia API
+
+Wszystkie endpointy mają limity chroniące przed nadmiernym zużyciem tokenów:
+
+| Endpoint | Limit | Opis |
+|----------|-------|------|
+| `/api/process` | 10,000 znaków | Max długość transkrypcji |
+| `/api/summarize` | 50 notatek, 50,000 znaków | Max notatek i treści |
+| `/api/suggest-category` | 5,000 znaków | Max input |
+| `/api/suggest-tags` | 5,000 znaków | Max input |
+| `/api/translate` | 10,000 znaków + whitelist | Max input + dozwolone języki |
+| `/api/transcribe` | 25MB | Max rozmiar pliku audio |
 
 ## 🤖 AI Workflow
 
@@ -225,7 +240,7 @@ MyVoiceNotes10x/
 │   ├── constants.ts          # Colors, categories
 │   ├── export.ts             # MD/PDF export logic
 │   └── types.ts              # API response types
-├── __tests__/                # 153 Jest tests (87% coverage)
+├── __tests__/                # 169 Jest tests (87% coverage)
 ├── __mocks__/                # Test mocks
 ├── vercel.json               # Vercel config (waw1 region)
 └── .windsurfrules            # AI assistant rules (167 lines)

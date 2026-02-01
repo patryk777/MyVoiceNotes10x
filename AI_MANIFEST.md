@@ -105,7 +105,7 @@ Wygeneruj AI_MANIFEST.md z promptami.
 | Metryka | Wartość |
 |---------|---------|
 | **Commity** | 30+ |
-| **Testy** | 153 |
+| **Testy** | 169 |
 | **Pokrycie testami** | 87% |
 | **Pliki** | 50+ |
 | **Linie kodu** | ~4000 |
@@ -121,6 +121,16 @@ Zrób dokładne review kodu i popraw:
 - Wydziel page.tsx na mniejsze komponenty (<200 linii)
 - Wydziel logikę eksportu do lib/export.ts
 - Dodaj typy dla API responses
+```
+
+### 11. Zabezpieczenia API
+
+```
+Dodaj zabezpieczenia przed nadmiernym zużyciem tokenów:
+- Limity długości inputów dla każdego endpointu
+- Walidacja typów i wymaganych pól
+- Whitelist dozwolonych wartości (np. języki)
+- Limity rozmiaru plików
 ```
 
 ## 🔄 Git Flow
