@@ -1,5 +1,157 @@
 # MyVoiceNotes10x
 
-This is a course project for 10xdevs 2.0. It focuses on voice notes to replace commercial solutions, providing audio recording, automated transcription, and intelligent content processing. The project will continue to be developed after the training.
+> 🎙️ **AI-Powered Voice Notes** - Zamień głos w uporządkowane notatki z automatyczną kategoryzacją
 
-Built in Windsurf. For Cascade prompts, I also use Gemini 3 Pro in parallel for additional support.
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![Tests](https://img.shields.io/badge/Tests-70%20passed-green)](./package.json)
+
+## 📋 Cel projektu
+
+MyVoiceNotes to aplikacja do tworzenia notatek głosowych z automatyczną transkrypcją i kategoryzacją AI. Projekt powstał w ramach kursu **10xdevs 2.0** jako alternatywa dla komercyjnych rozwiązań.
+
+### Główne funkcje:
+- 🎤 **Nagrywanie głosu** z automatyczną transkrypcją (OpenAI Whisper)
+- 🤖 **AI Processing** - automatyczna kategoryzacja i strukturyzacja (GPT-4o)
+- 📊 **Kanban Board** - organizacja notatek w 4 kategoriach (Zadania, Pomysły, Notatki, Spotkania)
+- 🔍 **Wyszukiwanie** - szybkie filtrowanie notatek
+- 📤 **Eksport** - Markdown i PDF
+- 🏷️ **Tagi i kolory** - organizacja wizualna
+- ⏰ **Przypomnienia** - ustawianie terminów
+- 📜 **Historia wersji** - przywracanie poprzednich wersji
+- 🌍 **Wielojęzyczność** - interfejs PL/EN, tłumaczenie notatek
+- 📱 **Mobile First** - responsywny design
+
+## 🛠️ Stack technologiczny
+
+| Technologia | Wersja | Zastosowanie |
+|-------------|--------|--------------|
+| **Next.js** | 15 | App Router, Server Components |
+| **TypeScript** | 5.9 | Type safety |
+| **Tailwind CSS** | 4.0 | Styling |
+| **Lucide React** | 0.563 | Ikony |
+| **Vercel AI SDK** | 6.0 | Streaming LLM responses |
+| **OpenAI** | - | Whisper (transkrypcja), GPT-4o (AI) |
+| **Jest** | 30 | Testy jednostkowe |
+| **React Testing Library** | 16 | Testy komponentów |
+
+### Architektura:
+- **No Database** - localStorage dla persystencji danych
+- **No Auth** - aplikacja demo bez uwierzytelniania
+- **Streaming** - strumieniowanie odpowiedzi LLM
+- **FormData** - przesyłanie audio do backendu
+
+## 🚀 Instrukcja uruchomienia
+
+### Wymagania:
+- Node.js 18+
+- npm lub yarn
+- Klucz API OpenAI
+
+### Instalacja:
+
+```bash
+# Klonowanie repozytorium
+git clone https://github.com/patryk777/MyVoiceNotes10x.git
+cd MyVoiceNotes10x
+
+# Instalacja zależności
+npm install
+
+# Konfiguracja zmiennych środowiskowych
+cp .env.example .env.local
+# Edytuj .env.local i dodaj OPENAI_API_KEY
+```
+
+### Uruchomienie:
+
+```bash
+# Development
+npm run dev
+
+# Production build
+npm run build
+npm start
+
+# Testy
+npm test
+npm run test:watch
+```
+
+### Zmienne środowiskowe:
+
+```env
+OPENAI_API_KEY=sk-your-api-key-here
+```
+
+## 🧪 Testy
+
+Projekt zawiera **70 testów** jednostkowych:
+
+```
+__tests__/
+├── hooks/
+│   ├── useNotes.test.ts        (9 testów)
+│   ├── useSettings.test.ts     (8 testów)
+│   └── useRecorder.test.ts     (11 testów)
+└── components/
+    ├── NoteCard.test.tsx       (16 testów)
+    ├── NoteCard.extended.test.tsx (16 testów)
+    └── SettingsModal.test.tsx  (10 testów)
+```
+
+## 🤖 AI Workflow
+
+> **Ten projekt został w całości zbudowany przy użyciu [Windsurf Cascade](https://codeium.com/windsurf)** - AI-powered IDE.
+
+### Proces tworzenia:
+1. **Pair Programming z AI** - Cascade jako asystent programistyczny
+2. **Iteracyjne budowanie** - funkcja po funkcji z natychmiastowym testowaniem
+3. **Git Flow** - feature branches z automatycznymi commit messages
+4. **Testy generowane przez AI** - 70 testów jednostkowych
+
+### Narzędzia AI użyte w projekcie:
+- **Windsurf Cascade** - główne IDE i asystent
+- **Gemini 3 Pro** - wsparcie dla złożonych promptów
+- **OpenAI GPT-4o** - przetwarzanie notatek w aplikacji
+- **OpenAI Whisper** - transkrypcja audio
+
+Szczegóły promptów użytych w projekcie: [AI_MANIFEST.md](./AI_MANIFEST.md)
+
+## 📁 Struktura projektu
+
+```
+MyVoiceNotes10x/
+├── app/
+│   ├── api/
+│   │   ├── transcribe/      # Whisper API
+│   │   ├── process/         # GPT-4o processing
+│   │   ├── summarize/       # AI summary
+│   │   ├── suggest-category/# AI category
+│   │   ├── suggest-tags/    # AI tags
+│   │   └── translate/       # Translation
+│   ├── layout.tsx
+│   └── page.tsx             # Main Kanban view
+├── components/
+│   ├── NoteCard.tsx         # Note card component
+│   └── SettingsModal.tsx    # Settings modal
+├── hooks/
+│   ├── useNotes.ts          # Notes CRUD + localStorage
+│   ├── useRecorder.ts       # Audio recording
+│   └── useSettings.ts       # App settings
+├── __tests__/               # Jest tests
+└── __mocks__/               # Test mocks
+```
+
+## 📄 Licencja
+
+ISC
+
+## 👤 Autor
+
+**Patryk Walkiewicz** - [GitHub](https://github.com/patryk777)
+
+---
+
+*Projekt kursu 10xdevs 2.0 - Zbudowany z ❤️ i AI*
