@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI();
-
 const MAX_INPUT_LENGTH = 5000;
 
 export async function POST(req: Request) {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+
   try {
     const { title, content } = await req.json();
 
