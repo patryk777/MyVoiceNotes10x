@@ -37,6 +37,8 @@
 | 📜 **Historia wersji** | Przywracanie poprzednich wersji |
 | 🌍 **Wielojęzyczność** | Interfejs PL/EN, tłumaczenie notatek |
 | 📱 **Mobile First** | Responsywny design |
+| 💡 **Tooltips** | Rozbudowane opisy przycisków z emoji |
+| 🖼️ **Obrazki** | Dodawanie zdjęć do notatek |
 
 ## 🛠️ Stack technologiczny
 

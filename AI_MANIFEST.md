@@ -22,7 +22,7 @@
 | **Zarządzanie notatkami** | ~2h | Undo, tagi, kolory, archiwum, historia |
 | **AI Features** | ~1.5h | Sugestie kategorii/tagów, tłumaczenie, podsumowanie |
 | **Ustawienia** | ~30 min | i18n, limity nagrania |
-| **Testy jednostkowe** | ~3h | 169 testów Jest |
+| **Testy jednostkowe** | ~3h | 195 testów Jest |
 | **Testy E2E** | ~1h | 41 testów Playwright |
 | **Dokumentacja** | ~1h | README, AI_MANIFEST |
 | **Review & Refaktor** | ~1h | Code review, poprawki |
@@ -288,6 +288,8 @@ main
 | **Konwencjonalne commity** | Czytelna historia zmian |
 | **Feature branches** | Izolacja zmian, łatwy rollback |
 | **`.windsurfrules`** | AI rozumie kontekst projektu |
+| **MCP Servers** | Rozszerzone możliwości AI (10 serwerów) |
+| **Rozbudowane tooltips** | UX z opisami funkcji |
 
 ### ⚠️ Wyzwania
 
