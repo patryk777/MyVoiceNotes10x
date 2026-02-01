@@ -5,7 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-70%20passed-green)](./package.json)
+[![Tests](https://img.shields.io/badge/Tests-153%20passed-green)](./package.json)
 
 ## 📋 Cel projektu
 
@@ -87,18 +87,27 @@ OPENAI_API_KEY=sk-your-api-key-here
 
 ## 🧪 Testy
 
-Projekt zawiera **70 testów** jednostkowych:
+Projekt zawiera **153 testy** jednostkowe:
 
 ```
 __tests__/
 ├── hooks/
-│   ├── useNotes.test.ts        (9 testów)
-│   ├── useSettings.test.ts     (8 testów)
-│   └── useRecorder.test.ts     (11 testów)
-└── components/
-    ├── NoteCard.test.tsx       (16 testów)
-    ├── NoteCard.extended.test.tsx (16 testów)
-    └── SettingsModal.test.tsx  (10 testów)
+│   ├── useNotes.test.ts           (19 testów)
+│   ├── useSettings.test.ts        (8 testów)
+│   └── useRecorder.test.ts        (13 testów)
+├── components/
+│   ├── ActionBar.test.tsx         (14 testów)
+│   ├── DeleteConfirmModal.test.tsx (7 testów)
+│   ├── HistoryModal.test.tsx      (8 testów)
+│   ├── KanbanBoard.test.tsx       (12 testów)
+│   ├── NoteCard.test.tsx          (16 testów)
+│   ├── NoteCard.extended.test.tsx (16 testów)
+│   ├── RecordingSection.test.tsx  (10 testów)
+│   ├── SettingsModal.test.tsx     (4 testy)
+│   └── SummaryModal.test.tsx      (8 testów)
+└── lib/
+    ├── constants.test.ts          (14 testów)
+    └── export.test.ts             (11 testów)
 ```
 
 ## 🤖 AI Workflow
