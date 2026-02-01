@@ -104,11 +104,23 @@ Wygeneruj AI_MANIFEST.md z promptami.
 
 | Metryka | Wartość |
 |---------|---------|
-| **Commity** | 21+ |
+| **Commity** | 25+ |
 | **Testy** | 70 |
-| **Pliki** | 30+ |
-| **Linie kodu** | ~3000 |
-| **Czas budowy** | ~4 godziny |
+| **Pliki** | 40+ |
+| **Linie kodu** | ~3500 |
+| **Komponenty** | 9 |
+| **Hooki** | 3 |
+| **API Routes** | 6 |
+
+### 10. Refaktor
+
+```
+Zrób dokładne review kodu i popraw:
+- Error handling w API routes
+- Wydziel page.tsx na mniejsze komponenty (<200 linii)
+- Wydziel logikę eksportu do lib/export.ts
+- Dodaj typy dla API responses
+```
 
 ## 🔄 Git Flow
 
@@ -133,7 +145,9 @@ main
 ├── feat/translation
 ├── feat/settings
 ├── test/components-hooks
-└── feat/documentation
+├── feat/documentation
+├── refactor/notecard-components
+└── fix/code-review-issues
 ```
 
 ## 🎯 Wnioski

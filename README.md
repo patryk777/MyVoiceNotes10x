@@ -125,23 +125,35 @@ Szczegóły promptów użytych w projekcie: [AI_MANIFEST.md](./AI_MANIFEST.md)
 MyVoiceNotes10x/
 ├── app/
 │   ├── api/
-│   │   ├── transcribe/      # Whisper API
-│   │   ├── process/         # GPT-4o processing
-│   │   ├── summarize/       # AI summary
-│   │   ├── suggest-category/# AI category
-│   │   ├── suggest-tags/    # AI tags
-│   │   └── translate/       # Translation
+│   │   ├── transcribe/       # Whisper API
+│   │   ├── process/          # GPT-4o processing
+│   │   ├── summarize/        # AI summary
+│   │   ├── suggest-category/ # AI category
+│   │   ├── suggest-tags/     # AI tags
+│   │   └── translate/        # Translation
 │   ├── layout.tsx
-│   └── page.tsx             # Main Kanban view
+│   └── page.tsx              # Main orchestrator (230 linii)
 ├── components/
-│   ├── NoteCard.tsx         # Note card component
-│   └── SettingsModal.tsx    # Settings modal
+│   ├── ActionBar.tsx         # Search, export, settings buttons
+│   ├── KanbanBoard.tsx       # Kanban columns with drag-drop
+│   ├── NoteCard.tsx          # Note card (220 linii)
+│   ├── NoteEditForm.tsx      # Edit form with AI features
+│   ├── RecordingSection.tsx  # Mic button and timer
+│   ├── SettingsModal.tsx     # App settings modal
+│   ├── SummaryModal.tsx      # AI summary modal
+│   └── modals/
+│       ├── DeleteConfirmModal.tsx
+│       └── HistoryModal.tsx
 ├── hooks/
-│   ├── useNotes.ts          # Notes CRUD + localStorage
-│   ├── useRecorder.ts       # Audio recording
-│   └── useSettings.ts       # App settings
-├── __tests__/               # Jest tests
-└── __mocks__/               # Test mocks
+│   ├── useNotes.ts           # Notes CRUD + localStorage
+│   ├── useRecorder.ts        # Audio recording
+│   └── useSettings.ts        # App settings + i18n
+├── lib/
+│   ├── constants.ts          # Colors, categories
+│   ├── export.ts             # MD/PDF export logic
+│   └── types.ts              # API response types
+├── __tests__/                # 70 Jest tests
+└── __mocks__/                # Test mocks
 ```
 
 ## 📄 Licencja
