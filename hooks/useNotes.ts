@@ -2,10 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+export type NoteCategory = "tasks" | "ideas" | "notes" | "meetings";
+
 export interface Note {
   id: string;
   transcript: string;
+  title: string;
   content: string;
+  category: NoteCategory;
   createdAt: number;
 }
 
@@ -21,19 +25,32 @@ export function useNotes() {
     }
   }, []);
 
-  const saveNote = useCallback((transcript: string, content: string) => {
-    const note: Note = {
-      id: crypto.randomUUID(),
-      transcript,
-      content,
-      createdAt: Date.now(),
-    };
+  const saveNote = useCallback(
+    (transcript: string, title: string, content: string, category: NoteCategory) => {
+      const note: Note = {
+        id: crypto.randomUUID(),
+        transcript,
+        title,
+        content,
+        category,
+        createdAt: Date.now(),
+      };
+      setNotes((prev) => {
+        const updated = [note, ...prev];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        return updated;
+      });
+      return note;
+    },
+    []
+  );
+
+  const updateNoteCategory = useCallback((id: string, category: NoteCategory) => {
     setNotes((prev) => {
-      const updated = [note, ...prev];
+      const updated = prev.map((n) => (n.id === id ? { ...n, category } : n));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
-    return note;
   }, []);
 
   const deleteNote = useCallback((id: string) => {
@@ -44,5 +61,5 @@ export function useNotes() {
     });
   }, []);
 
-  return { notes, saveNote, deleteNote };
+  return { notes, saveNote, updateNoteCategory, deleteNote };
 }

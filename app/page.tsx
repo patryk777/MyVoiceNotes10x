@@ -1,16 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Mic, Square, Loader2, Trash2 } from "lucide-react";
+import { Mic, Square, Loader2, Trash2, CheckSquare, Lightbulb, FileText, Calendar } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRecorder } from "@/hooks/useRecorder";
-import { useNotes } from "@/hooks/useNotes";
+import { useNotes, NoteCategory, Note } from "@/hooks/useNotes";
+
+const CATEGORIES: { id: NoteCategory; label: string; icon: React.ReactNode; color: string }[] = [
+  { id: "tasks", label: "Zadania", icon: <CheckSquare className="w-4 h-4" />, color: "border-t-orange-500" },
+  { id: "ideas", label: "Pomysły", icon: <Lightbulb className="w-4 h-4" />, color: "border-t-yellow-500" },
+  { id: "notes", label: "Notatki", icon: <FileText className="w-4 h-4" />, color: "border-t-blue-500" },
+  { id: "meetings", label: "Spotkania", icon: <Calendar className="w-4 h-4" />, color: "border-t-purple-500" },
+];
 
 export default function Home() {
   const { status, audioBlob, startRecording, stopRecording, resetRecording } = useRecorder();
-  const { notes, saveNote, deleteNote } = useNotes();
+  const { notes, saveNote, updateNoteCategory, deleteNote } = useNotes();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [streamingContent, setStreamingContent] = useState("");
+  const [processingStatus, setProcessingStatus] = useState("");
 
   const handleMicClick = async () => {
     if (status === "idle") {
@@ -24,8 +31,8 @@ export default function Home() {
     if (!audioBlob) return;
 
     setIsProcessing(true);
-    setStreamingContent("");
-    
+    setProcessingStatus("Transkrybuję...");
+
     try {
       const formData = new FormData();
       formData.append("audio", audioBlob, "recording.webm");
@@ -41,6 +48,7 @@ export default function Home() {
       }
 
       const transcript = transcribeData.text;
+      setProcessingStatus("Przetwarzam z AI...");
 
       const processRes = await fetch("/api/process", {
         method: "POST",
@@ -48,44 +56,50 @@ export default function Home() {
         body: JSON.stringify({ prompt: transcript }),
       });
 
-      if (!processRes.body) {
-        throw new Error("No response body");
-      }
+      const data = await processRes.json();
 
-      const reader = processRes.body.getReader();
-      const decoder = new TextDecoder();
-      let content = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        content += chunk;
-        setStreamingContent(content);
-      }
-
-      if (content) {
-        saveNote(transcript, content);
+      if (data.title && data.content && data.category) {
+        saveNote(transcript, data.title, data.content, data.category);
         resetRecording();
-        setStreamingContent("");
       }
     } catch (err) {
       console.error("Processing error:", err);
     } finally {
       setIsProcessing(false);
+      setProcessingStatus("");
     }
   };
 
   const isWorking = isProcessing;
 
+  const getNotesByCategory = (category: NoteCategory): Note[] => {
+    return notes.filter((n) => n.category === category);
+  };
+
+  const handleDragStart = (e: React.DragEvent, noteId: string) => {
+    e.dataTransfer.setData("noteId", noteId);
+  };
+
+  const handleDrop = (e: React.DragEvent, category: NoteCategory) => {
+    e.preventDefault();
+    const noteId = e.dataTransfer.getData("noteId");
+    if (noteId) {
+      updateNoteCategory(noteId, category);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="flex flex-col h-full">
-      {/* Top: Mic button */}
-      <section className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
+      {/* Top: Recording section */}
+      <section className="flex items-center justify-center gap-6 p-6 border-b border-zinc-800">
         <button
           onClick={handleMicClick}
           disabled={isWorking}
-          className={`w-32 h-32 rounded-full flex items-center justify-center transition-all ${
+          className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
             status === "recording"
               ? "bg-red-600 animate-pulse"
               : status === "stopped"
@@ -95,73 +109,101 @@ export default function Home() {
           aria-label={status === "recording" ? "Stop recording" : "Start recording"}
         >
           {isWorking ? (
-            <Loader2 className="w-12 h-12 text-white animate-spin" />
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
           ) : status === "recording" ? (
-            <Square className="w-10 h-10 text-white" />
+            <Square className="w-6 h-6 text-white" />
           ) : (
-            <Mic className="w-12 h-12 text-white" />
+            <Mic className="w-8 h-8 text-white" />
           )}
         </button>
 
-        {status === "recording" && (
-          <p className="text-zinc-400">Nagrywanie... Kliknij, aby zatrzymać</p>
-        )}
-
-        {status === "stopped" && audioBlob && !isWorking && (
-          <div className="flex gap-4">
-            <button
-              onClick={processAudio}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium"
-            >
-              Przetwórz nagranie
-            </button>
-            <button
-              onClick={resetRecording}
-              className="px-6 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium"
-            >
-              Anuluj
-            </button>
-          </div>
-        )}
-
-        {streamingContent && (
-          <div className="max-w-2xl w-full bg-zinc-900 rounded-lg p-4 border border-zinc-800">
-            <div className="prose prose-invert prose-sm">
-              <ReactMarkdown>{streamingContent}</ReactMarkdown>
+        <div className="flex flex-col gap-2">
+          {status === "idle" && !isWorking && (
+            <p className="text-zinc-400">Kliknij, aby nagrać notatkę głosową</p>
+          )}
+          {status === "recording" && (
+            <p className="text-red-400">Nagrywanie... Kliknij, aby zatrzymać</p>
+          )}
+          {status === "stopped" && audioBlob && !isWorking && (
+            <div className="flex gap-3">
+              <button
+                onClick={processAudio}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-medium text-sm"
+              >
+                Przetwórz
+              </button>
+              <button
+                onClick={resetRecording}
+                className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium text-sm"
+              >
+                Anuluj
+              </button>
             </div>
-          </div>
-        )}
+          )}
+          {processingStatus && (
+            <p className="text-blue-400 text-sm">{processingStatus}</p>
+          )}
+        </div>
       </section>
 
-      {/* Bottom: Notes grid */}
-      <section className="p-6 border-t border-zinc-800">
-        <h2 className="text-lg font-medium mb-4">Inteligentne Notatki ({notes.length})</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {notes.map((note) => (
+      {/* Kanban board */}
+      <section className="flex-1 overflow-x-auto p-4">
+        <div className="flex gap-4 h-full min-w-max">
+          {CATEGORIES.map((cat) => (
             <div
-              key={note.id}
-              className="bg-zinc-900 rounded-lg p-4 border border-zinc-800 relative group"
+              key={cat.id}
+              className="w-80 flex-shrink-0 flex flex-col bg-zinc-900/50 rounded-lg"
+              onDrop={(e) => handleDrop(e, cat.id)}
+              onDragOver={handleDragOver}
             >
-              <button
-                onClick={() => deleteNote(note.id)}
-                className="absolute top-2 right-2 p-1 text-zinc-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                aria-label="Delete note"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-              <div className="prose prose-invert prose-sm">
-                <ReactMarkdown>{note.content}</ReactMarkdown>
+              {/* Column header */}
+              <div className={`p-3 border-t-4 ${cat.color} rounded-t-lg`}>
+                <div className="flex items-center gap-2 text-zinc-300">
+                  {cat.icon}
+                  <span className="font-medium">{cat.label}</span>
+                  <span className="ml-auto text-zinc-500 text-sm">
+                    {getNotesByCategory(cat.id).length}
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-zinc-500 mt-3">
-                {new Date(note.createdAt).toLocaleString()}
-              </p>
+
+              {/* Cards */}
+              <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[calc(100vh-220px)]">
+                {getNotesByCategory(cat.id).map((note) => (
+                  <div
+                    key={note.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, note.id)}
+                    className="bg-zinc-800 rounded-lg p-3 border border-zinc-700 cursor-grab active:cursor-grabbing hover:border-zinc-600 transition-colors group"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-medium text-sm text-zinc-200 line-clamp-2">
+                        {note.title}
+                      </h3>
+                      <button
+                        onClick={() => deleteNote(note.id)}
+                        className="p-1 text-zinc-500 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                        aria-label="Delete note"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="mt-2 text-xs text-zinc-400 line-clamp-3 prose prose-invert prose-xs">
+                      <ReactMarkdown>{note.content}</ReactMarkdown>
+                    </div>
+                    <p className="text-xs text-zinc-600 mt-2">
+                      {new Date(note.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+                {getNotesByCategory(cat.id).length === 0 && (
+                  <p className="text-zinc-600 text-sm text-center py-4">
+                    Przeciągnij lub nagraj
+                  </p>
+                )}
+              </div>
             </div>
           ))}
-          {notes.length === 0 && (
-            <p className="text-zinc-500 col-span-full text-center py-8">
-              Brak notatek. Nagraj swoją pierwszą notatkę głosową!
-            </p>
-          )}
         </div>
       </section>
     </div>

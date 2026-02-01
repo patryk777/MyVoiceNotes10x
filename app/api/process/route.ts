@@ -1,21 +1,23 @@
-import { streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { generateObject } from "ai";
+import { z } from "zod";
+
+const NoteSchema = z.object({
+  category: z.enum(["tasks", "ideas", "notes", "meetings"]).describe("Category based on content: tasks for action items/todos, ideas for creative thoughts/suggestions, meetings for meeting notes/appointments, notes for general information"),
+  title: z.string().describe("Short, descriptive title (max 50 chars)"),
+  content: z.string().describe("Well-structured markdown content with bullet points, headers if needed. Fix grammar, remove filler words."),
+});
 
 export async function POST(req: Request) {
   const { prompt } = await req.json();
 
-  const result = await streamText({
+  const { object } = await generateObject({
     model: openai("gpt-4o"),
-    system: `You are an intelligent note-taking assistant. Transform the user's voice transcript into a well-structured note. 
-Use markdown formatting:
-- Add a clear title
-- Organize content with headers if needed
-- Use bullet points for lists
-- Highlight key points
-- Fix grammar and remove filler words
-Keep the original meaning and tone.`,
-    prompt: prompt,
+    schema: NoteSchema,
+    prompt: `Transform this voice transcript into a structured note. Determine the best category based on content.
+
+Transcript: ${prompt}`,
   });
 
-  return result.toTextStreamResponse();
+  return Response.json(object);
 }
