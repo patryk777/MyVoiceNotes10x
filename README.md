@@ -15,7 +15,7 @@
 [![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](./LICENSE)
 [![10xDevs](https://img.shields.io/badge/10xDevs-2.0-purple?style=flat-square)](https://10xdevs.pl)
 
-**[Demo](https://myvoicenotes10x.vercel.app)** · **[Dokumentacja](#-instrukcja-uruchomienia)** · **[AI Manifest](./AI_MANIFEST.md)**
+**[Demo](https://my-voice-notes10x.vercel.app/)** · **[Dokumentacja](#-instrukcja-uruchomienia)** · **[AI Manifest](./AI_MANIFEST.md)**
 
 </div>
 
